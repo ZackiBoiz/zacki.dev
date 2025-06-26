@@ -212,13 +212,14 @@ main {
     box-shadow: var(--card-shadow);
     padding: 2vw 2.5vw;
     margin-bottom: 1.5vw;
-    transition: box-shadow 0.2s, background 0.3s, color 0.3s;
+    transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s;
     color: var(--fg);
     font-size: 1.2vw;
 }
 
 .card:hover {
     box-shadow: var(--card-hover-shadow);
+    transform: scale(1.02);
 }
 
 .avatar {
