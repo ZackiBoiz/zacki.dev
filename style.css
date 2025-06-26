@@ -33,7 +33,7 @@
     --project-btn-hover-bg: var(--accent2);
     --project-btn-fg: #fff;
     --private-note: #666;
-    --toggle-bg: #e5e7eb;
+    --toggle-bg: var(--secondary);
     --toggle-fg: var(--foreground);
     --toggle-hover-bg: #d1d5db;
     --footer-bg: var(--secondary);
@@ -195,8 +195,7 @@ header {
     font-size: 1.5vw;
 }
 
-#theme-toggle:hover,
-#theme-toggle:focus {
+#theme-toggle:hover {
     background: var(--toggle-hover-bg);
     outline: none;
 }
@@ -213,13 +212,14 @@ main {
     box-shadow: var(--card-shadow);
     padding: 2vw 2.5vw;
     margin-bottom: 1.5vw;
-    transition: box-shadow 0.2s, background 0.3s, color 0.3s;
+    transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s;
     color: var(--fg);
     font-size: 1.2vw;
 }
 
 .card:hover {
     box-shadow: var(--card-hover-shadow);
+    transform: scale(1.02);
 }
 
 .avatar {
