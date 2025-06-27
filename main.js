@@ -18,6 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTheme(getCurrentTheme());
     themeToggle.addEventListener("click", () => {
-        setTheme(getCurrentTheme());
+        setTheme(getCurrentTheme() === "dark" ? "light" : "dark");
     });
 });
