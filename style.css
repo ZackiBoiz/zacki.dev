@@ -224,6 +224,15 @@ main {
     box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.07);
 }
 
+.intro-card .title {
+    display: flex;
+    align-items: center;
+}
+.intro-card .title h1 {
+    color: var(--primary);
+    margin-left: 1vw;
+}
+
 .intro-card h1 {
     margin: 0.25vw 0 0.125vw 0;
     font-size: 2.2vw;
