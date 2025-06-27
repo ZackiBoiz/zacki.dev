@@ -1,25 +1,57 @@
 :root {
     --bg: #f7fafd;
+    --bg-rgb: 247, 250, 253;
     --bg-alt: #e9eef3;
+    --bg-alt-rgb: 233, 238, 243;
     --bg-muted: #dbe3ec;
+    --bg-muted-rgb: 219, 227, 236;
     --border: #c3cfe2;
+    --border-rgb: 195, 207, 226;
     --text: #1a2233;
+    --text-rgb: 26, 34, 51;
     --text-muted: #6b7a90;
+    --text-muted-rgb: 107, 122, 144;
     --primary: #4eaddb;
+    --primary-rgb: 78, 173, 219;
     --primary-alt: #ff007f;
+    --primary-alt-rgb: 255, 0, 127;
     --danger: #ea4335;
+    --danger-rgb: 234, 67, 53;
     --warning: #fbbc04;
+    --warning-rgb: 251, 188, 4;
     --success: #34c759;
+    --success-rgb: 52, 199, 89;
     --info: #2081b1;
+    --info-rgb: 32, 129, 177;
+}
+
+
+/* https://codepen.io/learyjk/pen/oNKQpYW */
+@property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes border-spin {
+    to {
+        --angle: 360deg;
+    }
 }
 
 [data-theme="dark"] {
     --bg: #181b22;
+    --bg-rgb: 24, 27, 34;
     --bg-alt: #232735;
+    --bg-alt-rgb: 35, 39, 53;
     --bg-muted: #2c3142;
+    --bg-muted-rgb: 44, 49, 66;
     --border: #353b4d;
+    --border-rgb: 53, 59, 77;
     --text: #f7fafd;
+    --text-rgb: 247, 250, 253;
     --text-muted: #aeb7c7;
+    --text-muted-rgb: 174, 183, 199;
 }
 
 html,
@@ -55,23 +87,30 @@ body {
 header, footer {
     background: var(--bg-alt);
     color: var(--text);
-    border-radius: 1vw;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border-bottom: 1px solid var(--border);
+    box-shadow: 0 0.125vw 0.25vw rgba(0,0,0,0.06);
     padding: 1vw 0;
     position: sticky;
     top: 0;
     z-index: 10;
 }
 
+header {
+    border-radius: 0 0 1vw 1vw;
+    border-top: none;
+    border-bottom: 0.125vw solid var(--border);
+    background: rgba(var(--bg-alt-rgb), 0.85);
+    backdrop-filter: blur(0.25vw);
+    -webkit-backdrop-filter: blur(0.25vw);
+}
+
 footer {
     border-radius: 1vw 1vw 0 0;
-    border-top: 1px solid var(--border);
+    border-top: 0.125vw solid var(--border);
     border-bottom: none;
     margin-top: 2vw;
     text-align: center;
     font-size: 1.2vw;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 0.125vw 0.25vw rgba(0,0,0,0.06);
     padding: 0.5vw 0;
     position: static;
 }
@@ -155,17 +194,17 @@ main {
 .card, .projects-section {
     background: var(--bg-alt);
     border-radius: 1vw;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    box-shadow: 0 0.25vw 1vw rgba(0,0,0,0.10);
     padding: 2vw 2.5vw;
     margin-bottom: 1.5vw;
     color: var(--text);
     font-size: 1.2vw;
-    border: 1px solid var(--border);
+    border: 0.125vw solid var(--border);
     transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s;
 }
 
 .card:hover {
-    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    box-shadow: 0 0.25vw 1vw rgba(0,0,0,0.14);
     transform: scale(1.02);
 }
 
@@ -225,19 +264,21 @@ main {
 .project-card {
     background: var(--bg);
     border-radius: 1vw;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    box-shadow:
+        0 0.2vw 1vw 0 rgba(var(--primary-rgb), 0.10),
+        0 0.5vw 2vw 0 rgba(var(--primary-alt-rgb), 0.10);
     padding: 1.2vw 1vw 1vw 1vw;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     color: var(--text);
-    border: 0.15vw solid var(--border);
+    border: 0.25vw solid transparent;
     background:
         linear-gradient(var(--bg), var(--bg)) padding-box,
-        conic-gradient(from 0deg, var(--primary), var(--primary-alt), var(--primary)) border-box;
-    animation: card-gradient-rotate 6s linear infinite;
+        conic-gradient(from var(--angle), var(--primary), var(--primary-alt), var(--primary)) border-box;
     background-origin: border-box;
     background-clip: padding-box, border-box;
+    animation: border-spin 2s linear infinite;
     margin-right: 1.5vw;
     margin-bottom: 1.5vw;
     width: 25vw;
@@ -245,21 +286,11 @@ main {
     transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s;
 }
 
-@keyframes card-gradient-rotate {
-    0% {
-        background:
-            linear-gradient(var(--bg), var(--bg)) padding-box,
-            conic-gradient(from 0deg, var(--primary), var(--primary-alt), var(--primary)) border-box;
-    }
-    100% {
-        background:
-            linear-gradient(var(--bg), var(--bg)) padding-box,
-            conic-gradient(from 360deg, var(--primary), var(--primary-alt), var(--primary)) border-box;
-    }
-}
-
 .project-card:hover {
-    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    /* Enhance shadow on hover, still dynamic */
+    box-shadow:
+        0 0.4vw 2vw 0 rgba(var(--primary-rgb), 0.18),
+        0 1vw 3vw 0 rgba(var(--primary-alt-rgb), 0.18);
     transform: translateY(-0.25vw) scale(1.02);
 }
 
