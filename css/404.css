@@ -1,0 +1,64 @@
+.notfound-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40vh;
+    margin: 6vw auto 0 auto;
+    max-width: 32vw;
+    text-align: center;
+}
+
+.notfound-icon {
+    font-size: 4vw;
+    color: var(--danger);
+    margin-bottom: 1vw;
+    animation: shake 1.2s cubic-bezier(.36, .07, .19, .97) both infinite;
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translateX(-2px);
+    }
+
+    20%,
+    80% {
+        transform: translateX(4px);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translateX(-8px);
+    }
+
+    40%,
+    60% {
+        transform: translateX(8px);
+    }
+
+    100% {
+        transform: none;
+    }
+}
+
+.notfound-card h1 {
+    font-size: 4vw;
+    margin: 0.5vw 0 0.2vw 0;
+    color: var(--danger);
+    font-weight: bold;
+    letter-spacing: 0.2vw;
+}
+
+.notfound-card h2 {
+    font-size: 2vw;
+    margin: 0.2vw 0 1vw 0;
+    color: var(--text-muted);
+}
+
+.notfound-card p {
+    font-size: 1.2vw;
+    color: var(--text-muted);
+}
