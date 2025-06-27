@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const icon = themeToggle.querySelector("i");
         if (icon) {
             icon.className = theme === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
-            icon.style.color = theme === "dark" ? "#FFD600" : "#222";
         }
     }
 

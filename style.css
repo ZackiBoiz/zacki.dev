@@ -25,20 +25,6 @@
     --info-rgb: 32, 129, 177;
 }
 
-
-/* https://codepen.io/learyjk/pen/oNKQpYW */
-@property --angle {
-    syntax: "<angle>";
-    initial-value: 0deg;
-    inherits: false;
-}
-
-@keyframes border-spin {
-    to {
-        --angle: 360deg;
-    }
-}
-
 [data-theme="dark"] {
     --bg: #181b22;
     --bg-rgb: 24, 27, 34;
@@ -69,13 +55,15 @@ body {
     scroll-behavior: smooth;
     font-size: 1.2vw;
     user-select: none;
-    transition: background 0.3s, color 0.3s;
+    transition: background 0.2s, color 0.2s;
 
-    scrollbar-width: none; /* For Firefox */
+    scrollbar-width: none;
+    /* For Firefox */
 }
 
 ::-webkit-scrollbar {
-    display: none; /* For webkit browsers; Chrome, Edge, Safari */
+    display: none;
+    /* For webkit browsers; Chrome, Edge, Safari */
 }
 
 .container {
@@ -84,10 +72,11 @@ body {
     padding: 0 1.5vw;
 }
 
-header, footer {
+header,
+footer {
     background: var(--bg-alt);
     color: var(--text);
-    box-shadow: 0 0.125vw 0.25vw rgba(0,0,0,0.06);
+    box-shadow: 0 0.125vw 0.25vw rgba(0, 0, 0, 0.06);
     padding: 1vw 0;
     position: sticky;
     top: 0;
@@ -110,7 +99,7 @@ footer {
     margin-top: 2vw;
     text-align: center;
     font-size: 1.2vw;
-    box-shadow: 0 0.125vw 0.25vw rgba(0,0,0,0.06);
+    box-shadow: 0 0.125vw 0.25vw rgba(0, 0, 0, 0.06);
     padding: 0.5vw 0;
     position: static;
 }
@@ -136,8 +125,13 @@ footer {
 }
 
 @keyframes logo-gradient-scroll {
-    0% { background-position: 200% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+        background-position: 200% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .navbar ul {
@@ -160,10 +154,9 @@ footer {
 
 .navbar a:hover {
     background: var(--primary);
-    color: #fff;
 }
 
-#theme-toggle {
+.theme-toggle {
     background: var(--bg-alt);
     border: none;
     color: var(--text);
@@ -179,11 +172,24 @@ footer {
     transition: background 0.2s, color 0.2s;
     margin-left: 1vw;
     flex-shrink: 0;
-    box-shadow: 0 0.1vw 0.4vw rgba(0,0,0,0.04);
+    box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.04);
 }
 
-#theme-toggle i { font-size: 1.5vw; }
-#theme-toggle:hover { background: var(--bg-muted); outline: none; }
+.theme-toggle i {
+    font-size: 1.5vw;
+}
+
+.theme-toggle i.fa-moon {
+    color: var(--info);
+}
+.theme-toggle i.fa-sun {
+    color: var(--warning);
+}
+
+.theme-toggle:hover {
+    background: var(--bg-muted);
+    outline: none;
+}
 
 main {
     max-width: 90vw;
@@ -191,20 +197,21 @@ main {
     padding: 0 1.5vw;
 }
 
-.card, .projects-section {
+.card,
+.projects-section {
     background: var(--bg-alt);
     border-radius: 1vw;
-    box-shadow: 0 0.25vw 1vw rgba(0,0,0,0.10);
+    box-shadow: 0 0.25vw 1vw rgba(0, 0, 0, 0.10);
     padding: 2vw 2.5vw;
     margin-bottom: 1.5vw;
     color: var(--text);
     font-size: 1.2vw;
     border: 0.125vw solid var(--border);
-    transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s;
+    transition: box-shadow 0.2s, transform 0.2s, background 0.2s, color 0.2s;
 }
 
 .card:hover {
-    box-shadow: 0 0.25vw 1vw rgba(0,0,0,0.14);
+    box-shadow: 0 0.25vw 1vw rgba(0, 0, 0, 0.14);
     transform: scale(1.02);
 }
 
@@ -214,7 +221,7 @@ main {
     margin-bottom: 1.2vw;
     border-radius: 50%;
     border: 0.15vw solid var(--primary);
-    box-shadow: 0 0.1vw 0.4vw rgba(0,0,0,0.07);
+    box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.07);
 }
 
 .intro-card h1 {
@@ -239,7 +246,9 @@ main {
     transition: color 0.2s;
 }
 
-.socials a:hover { color: var(--primary-alt); }
+.socials a:hover {
+    color: var(--primary-alt);
+}
 
 .projects-section h2 {
     margin: 0 0 0.5vw 0;
@@ -283,11 +292,10 @@ main {
     margin-bottom: 1.5vw;
     width: 25vw;
     height: 10vw;
-    transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s;
+    transition: box-shadow 0.2s, transform 0.2s, background 0.2s, color 0.2s;
 }
 
 .project-card:hover {
-    /* Enhance shadow on hover, still dynamic */
     box-shadow:
         0 0.4vw 2vw 0 rgba(var(--primary-rgb), 0.18),
         0 1vw 3vw 0 rgba(var(--primary-alt-rgb), 0.18);
@@ -317,22 +325,37 @@ main {
     align-items: center;
     gap: 0.3em;
     background: var(--primary);
-    color: #fff;
+    color: var(--text);
     border: none;
     border-radius: 0.4vw;
     padding: 0.4em 1em;
     font-size: 1vw;
     font-weight: 500;
     text-decoration: none;
-    transition: background 0.18s, box-shadow 0.18s, color 0.18s;
-    box-shadow: 0 0.1vw 0.4vw rgba(0,0,0,0.05);
+    transition: background 0.2s, box-shadow 0.18s, color 0.2s;
+    box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.05);
 }
 
 .project-btn:hover {
     background: var(--primary-alt);
-    color: #fff;
     text-decoration: none;
-    box-shadow: 0 0.2vw 0.8vw rgba(0,0,0,0.10);
+    box-shadow: 0 0.2vw 0.8vw rgba(0, 0, 0, 0.10);
 }
 
-.projects-grid .project-card:last-child { margin-right: 0; }
+.projects-grid .project-card:last-child {
+    margin-right: 0;
+}
+
+
+/* https://codepen.io/learyjk/pen/oNKQpYW */
+@property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes border-spin {
+    to {
+        --angle: 360deg;
+    }
+}
