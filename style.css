@@ -182,6 +182,7 @@ footer {
 .theme-toggle i.fa-moon {
     color: var(--info);
 }
+
 .theme-toggle i.fa-sun {
     color: var(--warning);
 }
@@ -195,6 +196,19 @@ main {
     max-width: 90vw;
     margin: 2vw auto;
     padding: 0 1.5vw;
+}
+
+a.link,
+a.link:visited {
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: none;
+    transition: color 0.2s, border 0.2s;
+}
+
+a.link:hover {
+    color: var(--primary-alt);
+    border-bottom: 0.125vw solid var(--primary-alt);
 }
 
 .card,
@@ -228,6 +242,7 @@ main {
     display: flex;
     align-items: center;
 }
+
 .intro-card .title h1 {
     color: var(--primary);
     margin-left: 1vw;
@@ -273,35 +288,31 @@ main {
 .projects-grid {
     display: flex;
     flex-wrap: wrap;
+    gap: 1.5vw;
     margin-bottom: 1.5vw;
-    gap: 0;
     justify-content: flex-start;
     align-items: stretch;
 }
 
 .project-card {
-    background: var(--bg);
+    box-sizing: border-box;
+    flex: 0 0 25vw;
     border-radius: 1vw;
-    box-shadow:
-        0 0.2vw 1vw 0 rgba(var(--primary-rgb), 0.10),
-        0 0.5vw 2vw 0 rgba(var(--primary-alt-rgb), 0.10);
-    padding: 1.2vw 1vw 1vw 1vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    color: var(--text);
+    padding: 1.2vw 1vw 1vw;
     border: 0.25vw solid transparent;
     background:
         linear-gradient(var(--bg), var(--bg)) padding-box,
         conic-gradient(from var(--angle), var(--primary), var(--primary-alt), var(--primary)) border-box;
-    background-origin: border-box;
     background-clip: padding-box, border-box;
     animation: border-spin 2s linear infinite;
-    margin-right: 1.5vw;
-    margin-bottom: 1.5vw;
-    width: 25vw;
-    height: 10vw;
+    box-shadow:
+        0 0.2vw 1vw 0 rgba(var(--primary-rgb), 0.10),
+        0 0.5vw 2vw 0 rgba(var(--primary-alt-rgb), 0.10);
     transition: box-shadow 0.2s, transform 0.2s, background 0.2s, color 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--text);
 }
 
 .project-card:hover {
