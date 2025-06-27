@@ -1,13 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const themeToggle = document.getElementById("theme-toggle");
     const html = document.documentElement;
+    const themeToggle = document.getElementById("theme-toggle");
     const navbar = document.getElementById("main-nav");
-
-    function getPreferredTheme() {
-        const stored = localStorage.getItem("theme");
-        if (stored) return stored;
-        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    }
 
     function setTheme(theme) {
         html.setAttribute("data-theme", theme);
@@ -18,10 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    setTheme(getPreferredTheme());
+    function getCurrentTheme() {
+        return html.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    }
 
+    setTheme(getCurrentTheme());
     themeToggle.addEventListener("click", () => {
-        const current = html.getAttribute("data-theme") === "dark" ? "dark" : "light";
-        setTheme(current === "dark" ? "light" : "dark");
+        setTheme(getCurrentTheme());
     });
 });
