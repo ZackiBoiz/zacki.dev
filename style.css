@@ -255,7 +255,12 @@ a.link:hover {
 
 .alias {
     font-size: 1.2vw;
+    font-weight: bold;
     color: var(--primary-alt);
+}
+
+.muted {
+    color: var(--text-muted);
 }
 
 .socials {
