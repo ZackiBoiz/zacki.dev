@@ -47,10 +47,6 @@ body {
     background: var(--bg);
     color: var(--text);
     font-family: 'Segoe UI', Arial, sans-serif;
-    min-height: 100vh;
-    min-width: 100vw;
-    width: 100vw;
-    height: 100vh;
     box-sizing: border-box;
     scroll-behavior: smooth;
     font-size: 1.2vw;
@@ -59,6 +55,16 @@ body {
 
     scrollbar-width: none;
     /* For Firefox */
+}
+
+html {
+    min-height: 100%;
+    min-width: 100%;
+    position: relative;
+}
+body {
+    height: 100%;
+    width: 100%;
 }
 
 ::-webkit-scrollbar {
