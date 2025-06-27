@@ -1,73 +1,25 @@
 :root {
-    --primary: #0011ff;
-    --primary-dark: #111ecd;
-    --secondary: #f0f1f4;
-    --secondary-dark: #23272a;
-    --background: #f6f8fa;
-    --background-dark: #181a1b;
-    --foreground: #222;
-    --foreground-dark: #f6f8fa;
-    --border: #e1e4e8;
-    --border-dark: #23272a;
+    --bg: #f7fafd;
+    --bg-alt: #e9eef3;
+    --bg-muted: #dbe3ec;
+    --border: #c3cfe2;
+    --text: #1a2233;
+    --text-muted: #6b7a90;
+    --primary: #4eaddb;
+    --primary-alt: #ff007f;
+    --danger: #ea4335;
     --warning: #fbbc04;
     --success: #34c759;
-    --danger: #ea4335;
-    --accent1: #4eaddb;
-    --accent1-dark: #2081b1;
-    --accent2: #ff007f;
-    --accent2-dark: #ce1270;
-
-    --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
-    --card-hover-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
-
-    --bg: var(--background);
-    --fg: var(--foreground);
-    --card-bg: #fff;
-    --accent: var(--accent1);
-    --navbar-link: var(--foreground);
-    --navbar-link-hover: var(--secondary);
-    --social-link: var(--foreground);
-    --social-link-hover: var(--accent1);
-    --project-btn-bg: var(--accent1);
-    --project-btn-hover-bg: var(--accent2);
-    --project-btn-fg: #fff;
-    --private-note: #666;
-    --toggle-bg: var(--secondary);
-    --toggle-fg: var(--foreground);
-    --toggle-hover-bg: #d1d5db;
-    --footer-bg: var(--secondary);
-    --footer-fg: var(--foreground);
-    --header-bg: var(--secondary);
-    --header-fg: var(--foreground);
-    --project-card-bg: #fff;
+    --info: #2081b1;
 }
 
 [data-theme="dark"] {
-    --bg: var(--background-dark);
-    --fg: var(--foreground-dark);
-    --card-bg: var(--secondary-dark);
-    --accent: var(--accent1);
-    --border: var(--border-dark);
-    --shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
-    --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
-    --card-hover-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
-    --project-card-bg: var(--secondary-dark);
-    --footer-bg: var(--secondary-dark);
-    --footer-fg: var(--foreground-dark);
-    --header-bg: var(--secondary-dark);
-    --header-fg: var(--foreground-dark);
-    --navbar-link: var(--foreground-dark);
-    --navbar-link-hover: var(--secondary-dark);
-    --social-link: var(--foreground-dark);
-    --social-link-hover: var(--accent1);
-    --project-btn-bg: var(--accent1);
-    --project-btn-hover-bg: var(--accent2);
-    --project-btn-fg: #fff;
-    --private-note: #aaa;
-    --toggle-bg: var(--secondary-dark);
-    --toggle-fg: var(--foreground-dark);
-    --toggle-hover-bg: var(--background-dark);
+    --bg: #181b22;
+    --bg-alt: #232735;
+    --bg-muted: #2c3142;
+    --border: #353b4d;
+    --text: #f7fafd;
+    --text-muted: #aeb7c7;
 }
 
 html,
@@ -75,7 +27,7 @@ body {
     margin: 0;
     padding: 0;
     background: var(--bg);
-    color: var(--fg);
+    color: var(--text);
     font-family: 'Segoe UI', Arial, sans-serif;
     min-height: 100vh;
     min-width: 100vw;
@@ -85,14 +37,13 @@ body {
     scroll-behavior: smooth;
     font-size: 1.2vw;
     user-select: none;
+    transition: background 0.3s, color 0.3s;
+
+    scrollbar-width: none; /* For Firefox */
 }
 
-body {
-    min-height: 100vh;
-    min-width: 100vw;
-    width: 100vw;
-    height: 100vh;
-    transition: background 0.3s, color 0.3s;
+::-webkit-scrollbar {
+    display: none; /* For webkit browsers; Chrome, Edge, Safari */
 }
 
 .container {
@@ -101,24 +52,34 @@ body {
     padding: 0 1.5vw;
 }
 
-header {
-    background: var(--header-bg);
-    color: var(--header-fg);
+header, footer {
+    background: var(--bg-alt);
+    color: var(--text);
+    border-radius: 1vw;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-bottom: 1px solid var(--border);
     padding: 1vw 0;
-    box-shadow: var(--shadow);
-    border-radius: 0 0 1vw 1vw;
     position: sticky;
     top: 0;
     z-index: 10;
 }
 
-.container.header-content {
+footer {
+    border-radius: 1vw 1vw 0 0;
+    border-top: 1px solid var(--border);
+    border-bottom: none;
+    margin-top: 2vw;
+    text-align: center;
+    font-size: 1.2vw;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 0.5vw 0;
+    position: static;
+}
+
+.header-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 90vw;
-    margin: 0 auto;
-    padding: 0 1.5vw;
 }
 
 .logo {
@@ -127,7 +88,7 @@ header {
     font-size: 2vw;
     gap: 0.4vw;
     font-weight: bold;
-    background: linear-gradient(270deg, var(--accent1), var(--accent2), var(--accent1));
+    background: linear-gradient(270deg, var(--primary), var(--primary-alt), var(--primary));
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -136,18 +97,8 @@ header {
 }
 
 @keyframes logo-gradient-scroll {
-    0% {
-        background-position: 200% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-.navbar {
-    display: flex;
-    align-items: center;
+    0% { background-position: 200% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .navbar ul {
@@ -159,23 +110,24 @@ header {
 }
 
 .navbar a {
-    color: var(--navbar-link);
+    color: var(--text);
     text-decoration: none;
     font-weight: 500;
     padding: 0.15vw 0.5vw;
     border-radius: 0.4vw;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s;
     font-size: 1.2vw;
 }
 
 .navbar a:hover {
-    background: var(--accent1-dark);
+    background: var(--primary);
+    color: #fff;
 }
 
 #theme-toggle {
-    background: var(--toggle-bg);
+    background: var(--bg-alt);
     border: none;
-    color: var(--toggle-fg);
+    color: var(--text);
     font-size: 1.5vw;
     cursor: pointer;
     border-radius: 50%;
@@ -186,19 +138,13 @@ header {
     align-items: center;
     justify-content: center;
     transition: background 0.2s, color 0.2s;
-    box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.04);
     margin-left: 1vw;
     flex-shrink: 0;
+    box-shadow: 0 0.1vw 0.4vw rgba(0,0,0,0.04);
 }
 
-#theme-toggle i {
-    font-size: 1.5vw;
-}
-
-#theme-toggle:hover {
-    background: var(--toggle-hover-bg);
-    outline: none;
-}
+#theme-toggle i { font-size: 1.5vw; }
+#theme-toggle:hover { background: var(--bg-muted); outline: none; }
 
 main {
     max-width: 90vw;
@@ -206,19 +152,20 @@ main {
     padding: 0 1.5vw;
 }
 
-.card {
-    background: var(--card-bg);
+.card, .projects-section {
+    background: var(--bg-alt);
     border-radius: 1vw;
-    box-shadow: var(--card-shadow);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
     padding: 2vw 2.5vw;
     margin-bottom: 1.5vw;
-    transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s;
-    color: var(--fg);
+    color: var(--text);
     font-size: 1.2vw;
+    border: 1px solid var(--border);
+    transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s;
 }
 
 .card:hover {
-    box-shadow: var(--card-hover-shadow);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
     transform: scale(1.02);
 }
 
@@ -227,19 +174,18 @@ main {
     height: 6vw;
     margin-bottom: 1.2vw;
     border-radius: 50%;
-    border: 0.15vw solid var(--accent1);
-    box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.07);
+    border: 0.15vw solid var(--primary);
+    box-shadow: 0 0.1vw 0.4vw rgba(0,0,0,0.07);
 }
 
 .intro-card h1 {
-    margin-top: 0.25vw;
-    margin-bottom: 0.125vw;
+    margin: 0.25vw 0 0.125vw 0;
     font-size: 2.2vw;
 }
 
 .intro-card .alias {
     font-size: 1.2vw;
-    color: var(--accent2);
+    color: var(--primary-alt);
 }
 
 .socials {
@@ -249,61 +195,46 @@ main {
 }
 
 .socials a {
-    color: var(--social-link);
+    color: var(--text);
     font-size: 1.6vw;
     transition: color 0.2s;
 }
 
-.socials a:hover {
-    color: var(--accent2);
-}
+.socials a:hover { color: var(--primary-alt); }
 
 .projects-section h2 {
-    margin-top: 0;
-    margin-bottom: 0.5vw;
+    margin: 0 0 0.5vw 0;
     font-size: 1.7vw;
 }
 
 .private-projects-note {
-    color: var(--private-note);
+    color: var(--text-muted);
     font-size: 1vw;
     margin-top: 0.5vw;
-}
-
-footer {
-    background: var(--footer-bg);
-    color: var(--footer-fg);
-    text-align: center;
-    padding: 0.5vw 0;
-    border-radius: 1vw 1vw 0 0;
-    margin-top: 2vw;
-    font-size: 1.2vw;
-    box-shadow: var(--shadow);
 }
 
 .projects-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 0;
     margin-bottom: 1.5vw;
+    gap: 0;
     justify-content: flex-start;
     align-items: stretch;
 }
 
 .project-card {
-    background: var(--project-card-bg);
+    background: var(--bg);
     border-radius: 1vw;
-    box-shadow: var(--card-shadow);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
     padding: 1.2vw 1vw 1vw 1vw;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s;
-    color: var(--fg);
-    border: 0.15vw solid transparent;
+    color: var(--text);
+    border: 0.15vw solid var(--border);
     background:
-        linear-gradient(var(--project-card-bg), var(--project-card-bg)) padding-box,
-        conic-gradient(from 0deg, var(--accent1), var(--accent2), var(--accent1)) border-box;
+        linear-gradient(var(--bg), var(--bg)) padding-box,
+        conic-gradient(from 0deg, var(--primary), var(--primary-alt), var(--primary)) border-box;
     animation: card-gradient-rotate 6s linear infinite;
     background-origin: border-box;
     background-clip: padding-box, border-box;
@@ -311,36 +242,35 @@ footer {
     margin-bottom: 1.5vw;
     width: 25vw;
     height: 10vw;
+    transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s;
 }
 
 @keyframes card-gradient-rotate {
     0% {
         background:
-            linear-gradient(var(--project-card-bg), var(--project-card-bg)) padding-box,
-            conic-gradient(from 0deg, var(--accent1), var(--accent2), var(--accent1)) border-box;
+            linear-gradient(var(--bg), var(--bg)) padding-box,
+            conic-gradient(from 0deg, var(--primary), var(--primary-alt), var(--primary)) border-box;
     }
-
     100% {
         background:
-            linear-gradient(var(--project-card-bg), var(--project-card-bg)) padding-box,
-            conic-gradient(from 360deg, var(--accent1), var(--accent2), var(--accent1)) border-box;
+            linear-gradient(var(--bg), var(--bg)) padding-box,
+            conic-gradient(from 360deg, var(--primary), var(--primary-alt), var(--primary)) border-box;
     }
 }
 
 .project-card:hover {
-    box-shadow: var(--card-hover-shadow);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
     transform: translateY(-0.25vw) scale(1.02);
 }
 
 .project-card h3 {
-    margin-top: 0;
-    margin-bottom: 0.25vw;
+    margin: 0 0 0.25vw 0;
     font-size: 1.4vw;
 }
 
 .project-card p {
     margin: 0 0 0.5vw 0;
-    color: var(--fg);
+    color: var(--text);
     font-size: 1.15vw;
     flex: 1;
 }
@@ -355,8 +285,8 @@ footer {
     display: inline-flex;
     align-items: center;
     gap: 0.3em;
-    background: var(--project-btn-bg);
-    color: var(--project-btn-fg);
+    background: var(--primary);
+    color: #fff;
     border: none;
     border-radius: 0.4vw;
     padding: 0.4em 1em;
@@ -364,16 +294,14 @@ footer {
     font-weight: 500;
     text-decoration: none;
     transition: background 0.18s, box-shadow 0.18s, color 0.18s;
-    box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0.1vw 0.4vw rgba(0,0,0,0.05);
 }
 
 .project-btn:hover {
-    background: var(--project-btn-hover-bg);
-    color: var(--project-btn-fg);
+    background: var(--primary-alt);
+    color: #fff;
     text-decoration: none;
-    box-shadow: 0 0.2vw 0.8vw rgba(0, 0, 0, 0.10);
+    box-shadow: 0 0.2vw 0.8vw rgba(0,0,0,0.10);
 }
 
-.projects-grid .project-card:last-child {
-    margin-right: 0;
-}
+.projects-grid .project-card:last-child { margin-right: 0; }
