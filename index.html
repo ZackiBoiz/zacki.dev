@@ -7,6 +7,22 @@
     <title>ZackiBoiz | zacki.dev</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <script>
+        const html = document.documentElement;
+        function getPreferredTheme() {
+            const stored = localStorage.getItem("theme");
+            if (stored) return stored;
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+
+        function setTheme(theme) {
+            html.setAttribute("data-theme", theme);
+            localStorage.setItem("theme", theme);
+        }
+
+        setTheme(getPreferredTheme());
+    </script>
 </head>
 
 <body>
@@ -22,19 +38,24 @@
                     <li><a href="#projects">Projects</a></li>
                 </ul>
             </nav>
-            <button id="theme-toggle" aria-label="Toggle dark/light mode">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode">
                 <i class="fa-solid fa-moon"></i>
             </button>
         </div>
     </header>
     <main>
         <section id="about" class="intro-card card modern-card">
-            <img src="https://avatars.githubusercontent.com/u/95724562" alt="ZackiBoiz avatar" class="avatar">
+            <div class="title">
+                <img src="https://avatars.githubusercontent.com/u/95724562" alt="ZackiBoiz avatar" class="avatar">
+                <h1><em>Heyo!</em></h1>
+            </div>
             <h1>ZackiBoiz <span class="alias">(Zacki)</span></h1>
-            <p>Also known as <strong><span class="alias">xnor</span></strong> and <strong><span class="alias">XalximWhistleriver</span></strong>.</p>
+            <p>Also known as <strong><span class="alias">xnor</span></strong> and <strong><span
+                        class="alias">XalximWhistleriver</span></strong>.</p>
             <p>Welcome to my personal website at <strong>zacki.dev</strong>!</p>
             <div class="socials">
-                <a href="https://github.com/ZackiBoiz" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://github.com/ZackiBoiz" target="_blank" aria-label="GitHub"><i
+                        class="fab fa-github"></i></a>
             </div>
         </section>
         <section id="projects" class="projects-section card modern-card">
@@ -54,12 +75,14 @@
                 </div>
                 <div class="project-card">
                     <h3>Talkomatic Classic</h3>
-                    <p>A modern reimplementation of the classic Talkomatic chatroom. Real-time, web-based group chat.</p>
+                    <p>A modern reimplementation of the classic Talkomatic chatroom. Real-time, web-based group chat.
+                    </p>
                     <div class="project-links">
                         <a href="https://talkomatic.co" target="_blank" class="project-btn">
                             <i class="fa-solid fa-globe"></i> Website
                         </a>
-                        <a href="https://github.com/MohdYahyaMahmodi/talkomatic-classic" target="_blank" class="project-btn">
+                        <a href="https://github.com/MohdYahyaMahmodi/talkomatic-classic" target="_blank"
+                            class="project-btn">
                             <i class="fab fa-github"></i> GitHub
                         </a>
                     </div>
