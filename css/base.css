@@ -254,6 +254,18 @@ a.link:hover {
     color: var(--primary-alt);
 }
 
+.success {
+    color: var(--success);
+}
+.warning {
+    color: var(--warning);
+}
+.danger {
+    color: var(--danger);
+}
+.info {
+    color: var(--info);
+}
 .muted {
     color: var(--text-muted);
 }
