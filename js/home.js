@@ -140,12 +140,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
     };
 
+    const ACTIVITY_TYPES = {
+        PLAYING: 0,
+        STREAMING: 1,
+        LISTENING: 2,
+        WATCHING: 3,
+        CUSTOM: 4,
+        COMPETING: 5
+    };
+
     const ACTIVITY_LABELS = {
-        0: "🎮 Playing",
-        1: "🎥 Streaming",
-        2: "🎧 Listening to",
-        3: "👀 Watching",
-        5: "🏆 Competing in"
+        [ACTIVITY_TYPES.PLAYING]: "🎮 Playing",
+        [ACTIVITY_TYPES.STREAMING]: "🎥 Streaming",
+        [ACTIVITY_TYPES.LISTENING]: "🎧 Listening to",
+        [ACTIVITY_TYPES.WATCHING]: "👀 Watching",
+        [ACTIVITY_TYPES.COMPETING]: "🏆 Competing in"
     };
 
     function escape(str = "") {
@@ -209,17 +218,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function renderTimeDetails(timestamps, idxOrName, liveTimers) {
-        if (timestamps && timestamps.start) {
-            if (timestamps.end) {
-                const playedMs = timestamps.end - timestamps.start;
-                if (playedMs > 0) {
-                    return `<div class="discord-activity-card-time">Active for ${formatDuration(playedMs)}</div>`;
+        if (timestamps) {
+            if (timestamps.start) {
+                if (timestamps.end) {
+                    const playedMs = timestamps.end - timestamps.start;
+                    if (playedMs > 0) {
+                        return `<div class="discord-activity-card-time">Active for ${formatDuration(playedMs)}</div>`;
+                    }
+                } else {
+                    const timerId = `discord-activity-elapsed-timer-${idxOrName}`;
+                    const start = timestamps.start;
+                    liveTimers.push({ id: timerId, start });
+                    return `<div class="discord-activity-card-time"><span id="${timerId}">${formatDuration(Date.now() - start)}</span> elapsed</div>`;
                 }
-            } else {
-                const timerId = `discord-activity-timer-${idxOrName}`;
-                const start = timestamps.start;
-                liveTimers.push({ id: timerId, start });
-                return `<div class="discord-activity-card-time"><span id="${timerId}">${formatDuration(Date.now() - start)}</span> elapsed</div>`;
+            } else if (timestamps.end) {
+                const timerId = `discord-activity-ended-timer-${idxOrName}`;
+                const end = timestamps.end;
+                liveTimers.push({ id: timerId, end, ended: true });
+                return `<div class="discord-activity-card-time">Ended <span id="${timerId}">${formatDuration(Date.now() - end)}</span> ago</div>`;
             }
         }
         return "";
@@ -299,7 +315,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         activities.forEach((activity, idx) => {
-            if (activity.type === 4) {
+            if (activity.type === ACTIVITY_TYPES.CUSTOM) {
                 let emoji = "";
                 if (activity.emoji) {
                     if (activity.emoji.id) {
@@ -342,10 +358,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 largeImageTitle = escape(activity.details);
             }
 
+            let streamButton = "";
+            if (activity.type === ACTIVITY_TYPES.STREAMING && activity.url) {
+                streamButton = `<a href="${escape(activity.url)}" target="_blank" class="project-btn activity-btn">Watch Stream</a>`;
+            }
+
             html += `
                 <div class="discord-activity-card">
-                    <div class="discord-activity-card-header">
-                        ${activityLabel}
+                    <div class="discord-activity-card-header" style="display:flex;align-items:center;justify-content:space-between;">
+                        <span>${activityLabel}</span>
+                        ${streamButton}
                     </div>
                     <div class="discord-activity-card-body">
                         ${largeImageURL ? `
@@ -374,21 +396,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (spotifyData) {
             let timeDetails = renderTimeDetails(spotifyData.timestamps, "spotify", liveTimers);
+            const albumArtUrl = spotifyData.album_art_url || "assets/app-icons/default.svg";
+            const album = spotifyData.album ? escape(spotifyData.album) : "Unknown Album";
+            const artist = spotifyData.artist ? escape(spotifyData.artist) : "Unknown Artist";
+            const song = spotifyData.song ? escape(spotifyData.song) : "Unknown Song";
             html += `
                 <div class="discord-activity-card">
                     <div class="discord-activity-card-header">
-                        ${ACTIVITY_LABELS[2]}
+                        ${ACTIVITY_LABELS[ACTIVITY_TYPES.LISTENING]}
                     </div>
                     <div class="discord-activity-card-body">
                         <div class="discord-activity-card-assets">
-                            <img class="discord-activity-card-large hover-action" src="${escape(spotifyData.album_art_url)}" title="${escape(spotifyData.album)}">
+                            <img class="discord-activity-card-large hover-action" src="${albumArtUrl}" title="${album}">
                         </div>
                         <div class="discord-activity-card-text">
                             <div class="discord-activity-card-title">
-                                ${escape(spotifyData.song)}
+                                ${song}
                             </div>
-                            <div class="discord-activity-card-details">${escape(spotifyData.artist)}</div>
-                            <div class="discord-activity-card-meta">${escape(spotifyData.album)}</div>
+                            <div class="discord-activity-card-details">${artist}</div>
+                            <div class="discord-activity-card-meta">${album}</div>
                             ${timeDetails}
                         </div>
                     </div>
@@ -403,7 +429,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 liveTimers.forEach(timer => {
                     const el = document.getElementById(timer.id);
                     if (el) {
-                        el.textContent = formatDuration(Date.now() - timer.start);
+                        if (timer.ended) {
+                            el.textContent = formatDuration(Date.now() - timer.end);
+                        } else {
+                            el.textContent = formatDuration(Date.now() - timer.start);
+                        }
                     }
                 });
             }, 1000);

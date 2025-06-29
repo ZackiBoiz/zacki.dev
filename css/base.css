@@ -13,8 +13,12 @@
     --text-muted-rgb: 107, 122, 144;
     --primary: #4eaddb;
     --primary-rgb: 78, 173, 219;
+    --primary-muted: #2d85b1;
+    --primary-muted-rgb: 45, 133, 177;
     --primary-alt: #ff007f;
     --primary-alt-rgb: 255, 0, 127;
+    --primary-alt-muted: #c91e74;
+    --primary-alt-muted-rgb: 201, 30, 116;
     --danger: #ea4335;
     --danger-rgb: 234, 67, 53;
     --warning: #fbbc04;
