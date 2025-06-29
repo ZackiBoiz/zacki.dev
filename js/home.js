@@ -4,20 +4,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const STATUS_ICONS = {
         online: {
+            name: "Online",
             icon: "fa-circle",
-            color: "--success"
+            color: "success"
         },
         idle: {
+            name: "Idle",
             icon: "fa-moon",
-            color: "--warning"
+            color: "warning"
         },
         dnd: {
+            name: "Do Not Disturb",
             icon: "fa-minus-circle",
-            color: "--danger"
+            color: "danger"
         },
         offline: {
-            icon: "fa-circle-notch",
-            color: "--muted"
+            name: "Offline",
+            icon: "fa-circle-dot",
+            color: "muted"
         },
     };
 
@@ -108,8 +112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             publicFlags: discordUser.public_flags
         };
 
-        const statusIcon = STATUS_ICONS[discordStatus] || STATUS_ICONS.offline;
-
+        const status = STATUS_ICONS[discordStatus] || STATUS_ICONS.offline;
         let badgesHtml = "";
         if (userInfo.publicFlags) {
             Object.keys(USER_BADGES).forEach(flag => {
@@ -138,8 +141,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             </div>
             <div class="discord-status">
-                <i class="fas ${statusIcon.icon}" style="color: var(${statusIcon.color});"></i>
-                <span>${discordStatus.charAt(0).toUpperCase() + discordStatus.slice(1)}</span>
+                <i class="fas ${status.icon} ${status.color}"></i>
+                <span>${status.name}</span>
             </div>
         `;
 
