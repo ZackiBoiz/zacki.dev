@@ -1,123 +1,206 @@
-(async function() {
-    const card = document.getElementById('discord-card');
+document.addEventListener("DOMContentLoaded", async () => {
+    const card = document.getElementById("discord-card");
     if (!card) return;
 
-    function getStatusClass(status) {
-        switch (status) {
-            case "online": return "success";
-            case "idle": return "warning";
-            case "dnd": return "danger";
-            default: return "muted";
+    const STATUS_ICONS = {
+        online: {
+            icon: "fa-circle",
+            color: "--success"
+        },
+        idle: {
+            icon: "fa-moon",
+            color: "--warning"
+        },
+        dnd: {
+            icon: "fa-minus-circle",
+            color: "--danger"
+        },
+        offline: {
+            icon: "fa-circle-notch",
+            color: "--muted"
+        },
+    };
+
+    const USER_BADGES = {
+        [1 << 0]: {
+            title: "Discord Staff",
+            asset: "assets/discordstaff.svg"
+        },
+        [1 << 1]: {
+            title: "Discord Partner",
+            asset: "assets/discordpartner.svg"
+        },
+        [1 << 2]: {
+            title: "HypeSquad Events",
+            asset: "assets/hypesquadevents.svg"
+        },
+        [1 << 3]: {
+            title: "Discord Bug Hunter",
+            asset: "assets/discordbughunter1.svg"
+        },
+        [1 << 6]: {
+            title: "HypeSquad Bravery",
+            asset: "assets/hypesquadbravery.svg"
+        },
+        [1 << 7]: {
+            title: "HypeSquad Brilliance",
+            asset: "assets/hypesquadbrilliance.svg"
+        },
+        [1 << 8]: {
+            title: "HypeSquad Balance",
+            asset: "assets/hypesquadbalance.svg"
+        },
+        [1 << 9]: {
+            title: "Early Supporter",
+            asset: "assets/earlysupporter.webp"
+        },
+        [1 << 14]: {
+            title: "Discord Bug Hunter",
+            asset: "assets/discordbughunter2.svg"
+        },
+        [1 << 17]: {
+            title: "Early Verified Bot Developer",
+            asset: "assets/discordbotdev.svg"
+        },
+        [1 << 18]: {
+            title: "Moderator Programs Alumni",
+            asset: "assets/discordmod.svg"
+        },
+        [1 << 22]: {
+            title: "Active Developer",
+            asset: "assets/activedeveloper.svg"
         }
+    };
+
+    function escape(str = "") {
+        return str
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
     }
 
-    function getStatusIcon(status) {
-        const statusClass = getStatusClass(status);
-        switch (status) {
-            case "online": return `<i class="fas fa-circle ${statusClass}"></i>`;
-            case "idle": return `<i class="fas fa-moon ${statusClass}"></i>`;
-            case "dnd": return `<i class="fas fa-minus-circle ${statusClass}"></i>`;
-            case "offline": default: return `<i class="fas fa-circle-notch ${statusClass}"></i>`;
+    function toURL(imgKey, id, appId) {
+        if (!imgKey) return null;
+        if (imgKey.startsWith("mp:external")) {
+            return `https://media.discordapp.net/${imgKey.replace(/^mp:/, "")}`;
         }
-    }
-
-    function escapeHTML(str) {
-        return str.replace(/[&<>"']/g, m => ({
-            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-        })[m]);
+        return `https://cdn.discordapp.com/app-assets/${appId}/${imgKey}.png`;
     }
 
     try {
-        const res = await fetch("https://api.lanyard.rest/v1/users/900442235760443442");
-        const { data } = await res.json();
+        const response = await fetch("https://api.lanyard.rest/v1/users/900442235760443442");
+        const { data: lanyardData } = await response.json();
+        const discordUser = lanyardData.discord_user;
+        const discordStatus = lanyardData.discord_status || "offline";
+        const userInfo = {
+            avatarURL: discordUser.avatar
+                ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`
+                : `https://cdn.discordapp.com/embed/avatars/0.png`,
+            username: escape(discordUser.username),
+            discriminator: discordUser.discriminator === "0" ? null : discordUser.discriminator,
+            globalName: escape(discordUser.global_name || ""),
+            guild: discordUser.primary_guild && discordUser.primary_guild.tag ? {
+                tag: escape(discordUser.primary_guild.tag),
+                tagURL: `https://cdn.discordapp.com/clan-badges/${discordUser.primary_guild.identity_guild_id}/${discordUser.primary_guild.badge}.png?size=64`
+            } : null,
+            publicFlags: discordUser.public_flags
+        };
 
-        const user = data.discord_user;
-        const avatar = user.avatar
-            ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`
-            : "https://cdn.discordapp.com/embed/avatars/0.png";
-        const username = escapeHTML(user.username);
-        const globalName = escapeHTML(user.global_name || "");
-        const status = data.discord_status;
+        const statusIcon = STATUS_ICONS[discordStatus] || STATUS_ICONS.offline;
 
-        let guildTag = "";
-        if (user.primary_guild && user.primary_guild.tag) {
-            guildTag = `
-                <span class="discord-guild" title="${escapeHTML(user.primary_guild.tag)} badge">
-                    <img class="discord-guild-badge" src="https://cdn.discordapp.com/clan-badges/${user.primary_guild.identity_guild_id}/${user.primary_guild.badge}.png?size=64" alt="Guild badge">
-                    ${escapeHTML(user.primary_guild.tag)}
-                </span>
-            `;
-        }
-
-        let activities = "";
-        if (Array.isArray(data.activities)) {
-            activities = data.activities.map(act => {
-                let type = act.type;
-                if (type === 4) {
-                    let emoji = act.emoji ? `<span class="discord-activity-emoji">${escapeHTML(act.emoji.name)}</span>` : "";
-                    return `<div class="discord-activity">${emoji}<span class="discord-activity-details">${escapeHTML(act.state || "")}</span></div>`;
-                } else {
-                    let images = "";
-                    if (act.assets && act.assets.large_image) {
-                        let largeImg = act.assets.large_image;
-                        let largeUrl = largeImg.startsWith("mp:external")
-                            ? `https://media.discordapp.net/${largeImg.replace(/^mp:/, "")}`
-                            : `https://cdn.discordapp.com/app-assets/${act.application_id}/${largeImg}.png`;
-                        let largeTitle = act.assets.large_text ? escapeHTML(act.assets.large_text) : "";
-                        images += `<img class="discord-activity-largeimg" src="${largeUrl}" alt="" title="${largeTitle}">`;
-                        if (act.assets.small_image) {
-                            let smallImg = act.assets.small_image;
-                            let smallUrl = smallImg.startsWith("mp:external")
-                                ? `https://media.discordapp.net/${smallImg.replace(/^mp:/, "")}`
-                                : `https://cdn.discordapp.com/app-assets/${act.application_id}/${smallImg}.png`;
-                            let smallTitle = act.assets.small_text ? escapeHTML(act.assets.small_text) : "";
-                            images += `<img class="discord-activity-smallimg" src="${smallUrl}" alt="" title="${smallTitle}">`;
-                        }
-                        images = `<span class="discord-activity-images">${images}</span>`;
-                    }
-                    let label = "";
-                    switch (type) {
-                        case 0: // Playing
-                            label = `Playing ${escapeHTML(act.name)}`;
-                            break;
-                        case 1: // Streaming
-                            label = `Streaming ${act.details ? escapeHTML(act.details) : escapeHTML(act.name)}`;
-                            break;
-                        case 2: // Listening
-                            label = `Listening to ${escapeHTML(act.name)}`;
-                            break;
-                        case 3: // Watching
-                            label = `Watching ${act.details ? escapeHTML(act.details) : escapeHTML(act.name)}`;
-                            break;
-                        case 5: // Competing
-                            label = `Competing in ${escapeHTML(act.name)}`;
-                            break;
-                        default:
-                            label = escapeHTML(act.name);
-                    }
-                    let details = act.details && type !== 1 && type !== 3 ? `<span class="discord-activity-details">${escapeHTML(act.details)}</span>` : "";
-                    let state = act.state ? `<span class="discord-activity-meta">${escapeHTML(act.state)}</span>` : "";
-                    return `<div class="discord-activity">${images}<span class="discord-activity-title">${label}</span>${details}${state}</div>`;
+        let badgesHtml = "";
+        if (userInfo.publicFlags) {
+            Object.keys(USER_BADGES).forEach(flag => {
+                if ((userInfo.publicFlags & flag) === Number(flag)) {
+                    const badge = USER_BADGES[flag];
+                    badgesHtml += `<img class="discord-badge hover-action" src="${badge.asset}" alt="badge" title="${badge.title}">`;
                 }
-            }).join("");
+            });
         }
 
-        card.innerHTML = `
+        let html = `
             <div class="discord-header">
-                <img class="discord-avatar" src="${avatar}" alt="Discord avatar">
+                <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
                 <div class="discord-names">
-                    <span class="discord-username">${username}</span>
-                    <span class="discord-global">${globalName}</span>
+                    <span class="discord-username">
+                        ${userInfo.username + (userInfo.discriminator ? `#${userInfo.discriminator}` : "")}
+                        <span class="discord-badges">${badgesHtml}</span>
+                    </span>
+                    <span class="discord-global">${userInfo.globalName}</span>
                 </div>
-                ${guildTag}
+                ${userInfo.guild ? `
+                    <span class="discord-guild-tag hover-action" title="${userInfo.guild.tag} tag">
+                        <img src="${userInfo.guild.tagURL}" alt="Guild tag">
+                        ${userInfo.guild.tag}
+                    </span>` : ""
+                }
             </div>
             <div class="discord-status">
-                ${getStatusIcon(status)}
-                <span>${status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                <i class="fas ${statusIcon.icon}" style="color: var(${statusIcon.color});"></i>
+                <span>${discordStatus.charAt(0).toUpperCase() + discordStatus.slice(1)}</span>
             </div>
-            ${activities}
         `;
+
+        if (Array.isArray(lanyardData.activities)) {
+            lanyardData.activities.forEach(activity => {
+                if (activity.type === 4) {
+                    const emoji = activity.emoji ? escape(activity.emoji.name) : "";
+                    const statusText = escape(activity.state || "");
+                    html += `
+                        <div class="discord-activity-card">
+                            <div class="discord-activity-card-body">
+                                <div class="discord-activity-card-text">
+                                    <div class="discord-activity-card-details">${emoji} ${statusText}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const largeImageURL = toURL(activity.assets?.large_image, null, activity.application_id);
+                const smallImageURL = toURL(activity.assets?.small_image, null, activity.application_id);
+                const activityTypeLabels = {
+                    0: "🎮 Playing",
+                    1: "🎥 Streaming",
+                    2: "🎧 Listening to",
+                    3: "👀 Watching",
+                    5: "🏆 Competing in"
+                };
+                const activityLabel = activityTypeLabels[activity.type] || escape(activity.name);
+                const activityDetails = activity.details && ![1, 3].includes(activity.type) ? escape(activity.details) : "";
+                const activityMeta = activity.state ? escape(activity.state) : "";
+
+                html += `
+                    <div class="discord-activity-card">
+                        <div class="discord-activity-card-header">
+                            ${activityLabel}
+                        </div>
+                        <div class="discord-activity-card-body">
+                            ${largeImageURL ? `
+                                <div class="discord-activity-card-assets">
+                                    <img class="discord-activity-card-large hover-action" src="${largeImageURL}" title="${escape(activity.assets.large_text)}">
+                                    ${smallImageURL ? `<img class="discord-activity-card-small hover-action" src="${smallImageURL}" title="${escape(activity.assets.small_text)}">` : ""}
+                                </div>` : ""
+                            }
+                            <div class="discord-activity-card-text">
+                                <div class="discord-activity-card-name">
+                                    ${escape(activity.name)}
+                                </div>
+                                ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
+                                ${activityMeta ? `<div class="discord-activity-card-meta">${activityMeta}</div>` : ""}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        card.innerHTML = html;
     } catch (e) {
         card.innerHTML = `<em>Could not load Discord status.</em>`;
+        console.error(e);
     }
-})();
+});
