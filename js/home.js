@@ -127,11 +127,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="discord-header">
                 <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
                 <div class="discord-names">
-                    <span class="discord-username">
-                        ${userInfo.username + (userInfo.discriminator ? `#${userInfo.discriminator}` : "")}
+                    <span class="discord-global">
+                        ${userInfo.globalName}
                         <span class="discord-badges">${badgesHtml}</span>
                     </span>
-                    <span class="discord-global">${userInfo.globalName}</span>
+                    <span class="discord-username">
+                        ${userInfo.username + (userInfo.discriminator ? `#${userInfo.discriminator}` : "")}
+                    </span>
                 </div>
                 ${userInfo.guild ? `
                     <span class="discord-guild-tag hover-action" title="${userInfo.guild.tag} tag">
@@ -146,8 +148,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
         `;
 
+        function formatDuration(ms) {
+            let totalSeconds = Math.floor(ms / 1000);
+            let hours = Math.floor(totalSeconds / 3600);
+            let minutes = Math.floor((totalSeconds % 3600) / 60);
+            let seconds = totalSeconds % 60;
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+            } else {
+                return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+            }
+        }
+
+        let liveTimers = [];
+
         if (Array.isArray(lanyardData.activities)) {
-            lanyardData.activities.forEach(activity => {
+            lanyardData.activities.forEach((activity, idx) => {
                 if (activity.type === 4) {
                     const emoji = activity.emoji ? escape(activity.emoji.name) : "";
                     const statusText = escape(activity.state || "");
@@ -176,6 +192,21 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const activityDetails = activity.details && ![1, 3].includes(activity.type) ? escape(activity.details) : "";
                 const activityMeta = activity.state ? escape(activity.state) : "";
 
+                let timeDetails = "";
+                if (activity.timestamps && activity.timestamps.start) {
+                    if (activity.timestamps.end) {
+                        const playedMs = activity.timestamps.end - activity.timestamps.start;
+                        if (playedMs > 0) {
+                            timeDetails = `<div class="discord-activity-card-time">Active for ${formatDuration(playedMs)}</div>`;
+                        }
+                    } else {
+                        const timerId = `discord-activity-timer-${idx}`;
+                        const start = activity.timestamps.start;
+                        timeDetails = `<div class="discord-activity-card-time"><span id="${timerId}">${formatDuration(Date.now() - start)}</span> elapsed</div>`;
+                        liveTimers.push({ id: timerId, start });
+                    }
+                }
+
                 html += `
                     <div class="discord-activity-card">
                         <div class="discord-activity-card-header">
@@ -194,6 +225,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 </div>
                                 ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
                                 ${activityMeta ? `<div class="discord-activity-card-meta">${activityMeta}</div>` : ""}
+                                ${timeDetails}
                             </div>
                         </div>
                     </div>
@@ -202,6 +234,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         card.innerHTML = html;
+
+        if (liveTimers.length > 0) {
+            setInterval(() => {
+                liveTimers.forEach(timer => {
+                    const el = document.getElementById(timer.id);
+                    if (el) {
+                        el.textContent = formatDuration(Date.now() - timer.start);
+                    }
+                });
+            }, 1000);
+        }
     } catch (e) {
         card.innerHTML = `<em>Could not load Discord status.</em>`;
         console.error(e);

@@ -173,7 +173,7 @@
     flex-direction: column;
 }
 
-.discord-username {
+.discord-global {
     font-size: 1.1vw;
     font-weight: bold;
     color: var(--primary);
@@ -195,7 +195,7 @@
     vertical-align: middle;
 }
 
-.discord-global {
+.discord-username {
     font-size: 0.95vw;
     color: var(--text-muted);
     line-height: 1.1;
@@ -305,6 +305,13 @@
 .discord-activity-card-meta {
     font-size: 0.85vw;
     color: var(--text-muted);
+}
+
+.discord-activity-card-time {
+    font-size: 0.85vw;
+    color: var(--success);
+    margin-top: 0.1vw;
+    font-weight: bold;
 }
 
 .hover-action:hover {
