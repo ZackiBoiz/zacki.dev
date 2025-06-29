@@ -87,10 +87,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function toURL(imgKey, id, appId) {
         if (!imgKey) return null;
-        if (imgKey.startsWith("mp:external")) {
-            return `https://media.discordapp.net/${imgKey.replace(/^mp:/, "")}`;
+        if (imgKey.startsWith("mp:external/")) {
+            const match = imgKey.match(/mp:external\/[^/]+\/https?\/(.+)/);
+            if (match) {
+                return "https://" + match[1];
+            }
         }
-        return `https://cdn.discordapp.com/app-assets/${appId}/${imgKey}.png`;
+        if (/^\d+$/.test(imgKey) && appId) {
+            return `https://cdn.discordapp.com/app-assets/${appId}/${imgKey}.png`;
+        }
+
+        return null;
     }
 
     try {
@@ -123,17 +130,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         }
 
+        let showGlobalName = userInfo.globalName && userInfo.globalName.trim().length > 0;
+        let displayGlobalName = showGlobalName
+            ? userInfo.globalName
+            : `${userInfo.username}${userInfo.discriminator ? `#${userInfo.discriminator}` : ""}`;
+
         let html = `
             <div class="discord-header">
                 <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
                 <div class="discord-names">
                     <span class="discord-global">
-                        ${userInfo.globalName}
+                        ${displayGlobalName}
                         <span class="discord-badges">${badgesHtml}</span>
                     </span>
-                    <span class="discord-username">
+                    ${showGlobalName ? `<span class="discord-username">
                         ${userInfo.username + (userInfo.discriminator ? `#${userInfo.discriminator}` : "")}
-                    </span>
+                    </span>` : ""}
                 </div>
                 ${userInfo.guild ? `
                     <span class="discord-guild-tag hover-action" title="${userInfo.guild.tag} tag">
@@ -165,7 +177,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (Array.isArray(lanyardData.activities)) {
             lanyardData.activities.forEach((activity, idx) => {
                 if (activity.type === 4) {
-                    const emoji = activity.emoji ? escape(activity.emoji.name) : "";
+                    let emoji = "";
+                    if (activity.emoji) {
+                        if (activity.emoji.id) {
+                            const ext = activity.emoji.animated ? "gif" : "png";
+                            const emojiUrl = `https://cdn.discordapp.com/emojis/${activity.emoji.id}.${ext}`;
+                            emoji = `<img class="discord-custom-emoji" src="${emojiUrl}" alt="${escape(activity.emoji.name)}" title=":${activity.emoji.name}:">`;
+                        } else {
+                            emoji = escape(activity.emoji.name);
+                        }
+                    }
                     const statusText = escape(activity.state || "");
                     html += `
                         <div class="discord-activity-card">
@@ -189,7 +210,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     5: "🏆 Competing in"
                 };
                 const activityLabel = activityTypeLabels[activity.type] || escape(activity.name);
-                const activityDetails = activity.details && ![1, 3].includes(activity.type) ? escape(activity.details) : "";
+                const activityDetails = activity.details ? escape(activity.details) : "";
                 const activityMeta = activity.state ? escape(activity.state) : "";
 
                 let timeDetails = "";
@@ -222,7 +243,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                             <div class="discord-activity-card-text">
                                 <div class="discord-activity-card-title">
                                     ${escape(activity.name)}
-                                    <img class="discord-badge hover-action" src="assets/${activity.platform}.svg" alt="platform" title="${activity.platform[0].toUpperCase() + activity.platform.slice(1).toLowerCase()}">
+                                    ${activity.platform ? `
+                                        <img class="discord-badge hover-action" src="assets/${activity.platform}.svg" alt="platform" title="${activity.platform[0].toUpperCase() + activity.platform.slice(1).toLowerCase()}">
+                                        ` : ""
+                                    }
                                 </div>
                                 ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
                                 ${activityMeta ? `<div class="discord-activity-card-meta">${activityMeta}</div>` : ""}

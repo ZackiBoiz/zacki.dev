@@ -314,6 +314,12 @@
     font-weight: bold;
 }
 
+.discord-custom-emoji {
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: middle;
+}
+
 .hover-action:hover {
     filter: brightness(0.9) contrast(1.1);
     cursor: pointer;
