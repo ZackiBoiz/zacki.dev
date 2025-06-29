@@ -220,8 +220,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 </div>` : ""
                             }
                             <div class="discord-activity-card-text">
-                                <div class="discord-activity-card-name">
+                                <div class="discord-activity-card-title">
                                     ${escape(activity.name)}
+                                    <img class="discord-badge hover-action" src="assets/${activity.platform}.svg" alt="platform" title="${activity.platform[0].toUpperCase() + activity.platform.slice(1).toLowerCase()}">
                                 </div>
                                 ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
                                 ${activityMeta ? `<div class="discord-activity-card-meta">${activityMeta}</div>` : ""}
