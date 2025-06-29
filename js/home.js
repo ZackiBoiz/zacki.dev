@@ -127,11 +127,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="discord-header">
                 <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
                 <div class="discord-names">
-                    <span class="discord-username">
-                        ${userInfo.username + (userInfo.discriminator ? `#${userInfo.discriminator}` : "")}
+                    <span class="discord-global">
+                        ${userInfo.globalName}
                         <span class="discord-badges">${badgesHtml}</span>
                     </span>
-                    <span class="discord-global">${userInfo.globalName}</span>
+                    <span class="discord-username">
+                        ${userInfo.username + (userInfo.discriminator ? `#${userInfo.discriminator}` : "")}
+                    </span>
                 </div>
                 ${userInfo.guild ? `
                     <span class="discord-guild-tag hover-action" title="${userInfo.guild.tag} tag">
