@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const card = document.getElementById("discord-card");
     if (!card) return;
 
+    const LANYARD_USER_ID = "900442235760443442";
+
     const STATUS_ICONS = {
         online: {
             name: "Online",
@@ -28,52 +30,122 @@ document.addEventListener("DOMContentLoaded", async () => {
     const USER_BADGES = {
         [1 << 0]: {
             title: "Discord Staff",
-            asset: "assets/discordstaff.svg"
+            asset: "assets/badges/discordstaff.svg"
         },
         [1 << 1]: {
             title: "Discord Partner",
-            asset: "assets/discordpartner.svg"
+            asset: "assets/badges/discordpartner.svg"
         },
         [1 << 2]: {
             title: "HypeSquad Events",
-            asset: "assets/hypesquadevents.svg"
+            asset: "assets/badges/hypesquadevents.svg"
         },
         [1 << 3]: {
             title: "Discord Bug Hunter",
-            asset: "assets/discordbughunter1.svg"
+            asset: "assets/badges/discordbughunter1.svg"
         },
         [1 << 6]: {
             title: "HypeSquad Bravery",
-            asset: "assets/hypesquadbravery.svg"
+            asset: "assets/badges/hypesquadbravery.svg"
         },
         [1 << 7]: {
             title: "HypeSquad Brilliance",
-            asset: "assets/hypesquadbrilliance.svg"
+            asset: "assets/badges/hypesquadbrilliance.svg"
         },
         [1 << 8]: {
             title: "HypeSquad Balance",
-            asset: "assets/hypesquadbalance.svg"
+            asset: "assets/badges/hypesquadbalance.svg"
         },
         [1 << 9]: {
             title: "Early Supporter",
-            asset: "assets/earlysupporter.webp"
+            asset: "assets/badges/earlysupporter.webp"
         },
         [1 << 14]: {
             title: "Discord Bug Hunter",
-            asset: "assets/discordbughunter2.svg"
+            asset: "assets/badges/discordbughunter2.svg"
         },
         [1 << 17]: {
             title: "Early Verified Bot Developer",
-            asset: "assets/discordbotdev.svg"
+            asset: "assets/badges/discordbotdev.svg"
         },
         [1 << 18]: {
             title: "Moderator Programs Alumni",
-            asset: "assets/discordmod.svg"
+            asset: "assets/badges/discordmod.svg"
         },
         [1 << 22]: {
             title: "Active Developer",
-            asset: "assets/activedeveloper.svg"
+            asset: "assets/badges/activedeveloper.svg"
+        },
+        [1 << 23]: {
+            title: "Supports Commands",
+            asset: "assets/badges/supportscommands.svg"
+        },
+        [1 << 24]: {
+            title: "Uses Automod",
+            asset: "assets/badges/automod.svg"
         }
+    };
+
+    const USER_FLAIRS = {
+        bot: {
+            title: "App",
+            asset: "assets/flairs/App.svg"
+        },
+        verified_bot: {
+            title: "Verified App",
+            asset: "assets/flairs/VerifiedApp.svg"
+        },
+        beta: {
+            title: "Beta",
+            asset: "assets/flairs/Beta.svg"
+        },
+        ai: {
+            title: "AI",
+            asset: "assets/flairs/DarkAi.svg"
+        },
+        official: {
+            title: "Official",
+            asset: "assets/flairs/Official.svg"
+        },
+        original_poster: {
+            title: "Original Poster",
+            asset: "assets/flairs/OriginalPoster.svg"
+        },
+        system: {
+            title: "System",
+            asset: "assets/flairs/System.svg"
+        },
+    }
+
+    const PLATFORM_TYPES = {
+        desktop: {
+            title: "Desktop",
+            asset: "assets/platforms/desktop.svg"
+        },
+        web: {
+            title: "Web",
+            asset: "assets/platforms/web.svg"
+        },
+        mobile: {
+            title: "Mobile",
+            asset: "assets/platforms/mobile.svg"
+        },
+        ios: {
+            title: "Mobile (iOS)",
+            asset: "assets/platforms/mobile.svg"
+        },
+        embedded: {
+            title: "Console",
+            asset: "assets/platforms/embedded.svg"
+        },
+    };
+
+    const ACTIVITY_LABELS = {
+        0: "🎮 Playing",
+        1: "🎥 Streaming",
+        2: "🎧 Listening to",
+        3: "👀 Watching",
+        5: "🏆 Competing in"
     };
 
     function escape(str = "") {
@@ -88,9 +160,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     function toURL(imgKey, id, appId) {
         if (!imgKey) return null;
         if (imgKey.startsWith("mp:external/")) {
-            const match = imgKey.match(/mp:external\/[^/]+\/https?\/(.+)/);
+            const match = imgKey.match(/mp:external\/([^/]+\/https?\/.+)/);
             if (match) {
-                return "https://" + match[1];
+                console.log(match);
+                return "https://media.discordapp.net/external/" + match[1];
             }
         }
         if (/^\d+$/.test(imgKey) && appId) {
@@ -100,15 +173,72 @@ document.addEventListener("DOMContentLoaded", async () => {
         return null;
     }
 
+    function formatDuration(ms) {
+        ms = Math.max(0, ms);
+        let totalSeconds = Math.floor(ms / 1000);
+        let hours = Math.floor(totalSeconds / 3600);
+        let minutes = Math.floor((totalSeconds % 3600) / 60);
+        let seconds = totalSeconds % 60;
+        if (hours > 0) {
+            return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        } else {
+            return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+        }
+    }
+
+    function renderBadges(flags, BADGES) {
+        if (!flags) return "";
+        return Object.keys(BADGES).map(flag => {
+            if ((flags & flag) === Number(flag)) {
+                const badge = BADGES[flag];
+                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="badge" title="${badge.title}">`;
+            }
+            return "";
+        }).join("");
+    }
+
+    function renderFlairs(flairs, FLAIRS) {
+        if (!flairs) return "";
+        return Object.keys(FLAIRS).map(flair => {
+            if (flairs[flair]) {
+                const badge = FLAIRS[flair];
+                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="flair" title="${badge.title}">`;
+            }
+            return "";
+        }).join("");
+    }
+
+    function renderTimeDetails(timestamps, idxOrName, liveTimers) {
+        if (timestamps && timestamps.start) {
+            if (timestamps.end) {
+                const playedMs = timestamps.end - timestamps.start;
+                if (playedMs > 0) {
+                    return `<div class="discord-activity-card-time">Active for ${formatDuration(playedMs)}</div>`;
+                }
+            } else {
+                const timerId = `discord-activity-timer-${idxOrName}`;
+                const start = timestamps.start;
+                liveTimers.push({ id: timerId, start });
+                return `<div class="discord-activity-card-time"><span id="${timerId}">${formatDuration(Date.now() - start)}</span> elapsed</div>`;
+            }
+        }
+        return "";
+    }
+
     try {
-        const response = await fetch("https://api.lanyard.rest/v1/users/900442235760443442");
-        const { data: lanyardData } = await response.json();
+        const response = await fetch(`https://api.lanyard.rest/v1/users/${LANYARD_USER_ID}`);
+        const json = await response.json();
+        if (json.success === false) {
+            card.innerHTML = `<em>Could not load Discord status.<br>${json.error && json.error.message ? escape(json.error.message) : "Could not load Discord status."}</em>`;
+            return;
+        }
+        const { data: lanyardData } = json;
         const discordUser = lanyardData.discord_user;
         const discordStatus = lanyardData.discord_status || "offline";
         const userInfo = {
             avatarURL: discordUser.avatar
                 ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`
-                : `https://cdn.discordapp.com/embed/avatars/0.png`,
+                : `https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png`,
             username: escape(discordUser.username),
             discriminator: discordUser.discriminator === "0" ? null : discordUser.discriminator,
             globalName: escape(discordUser.global_name || ""),
@@ -116,19 +246,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 tag: escape(discordUser.primary_guild.tag),
                 tagURL: `https://cdn.discordapp.com/clan-badges/${discordUser.primary_guild.identity_guild_id}/${discordUser.primary_guild.badge}.png?size=64`
             } : null,
-            publicFlags: discordUser.public_flags
+            publicFlags: discordUser.public_flags,
+            flairs: {
+                bot: discordUser.bot
+            }
         };
 
         const status = STATUS_ICONS[discordStatus] || STATUS_ICONS.offline;
-        let badgesHtml = "";
-        if (userInfo.publicFlags) {
-            Object.keys(USER_BADGES).forEach(flag => {
-                if ((userInfo.publicFlags & flag) === Number(flag)) {
-                    const badge = USER_BADGES[flag];
-                    badgesHtml += `<img class="discord-badge hover-action" src="${badge.asset}" alt="badge" title="${badge.title}">`;
-                }
-            });
-        }
+        
+        let flairsHtml = renderFlairs(userInfo.flairs, USER_FLAIRS);
+        let badgesHtml = renderBadges(userInfo.publicFlags, USER_BADGES);
 
         let showGlobalName = userInfo.globalName && userInfo.globalName.trim().length > 0;
         let displayGlobalName = showGlobalName
@@ -141,6 +268,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <div class="discord-names">
                     <span class="discord-global">
                         ${displayGlobalName}
+                        <span class="discord-badges">${flairsHtml}</span>
                         <span class="discord-badges">${badgesHtml}</span>
                     </span>
                     ${showGlobalName ? `<span class="discord-username">
@@ -160,102 +288,112 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
         `;
 
-        function formatDuration(ms) {
-            let totalSeconds = Math.floor(ms / 1000);
-            let hours = Math.floor(totalSeconds / 3600);
-            let minutes = Math.floor((totalSeconds % 3600) / 60);
-            let seconds = totalSeconds % 60;
-            if (hours > 0) {
-                return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-            } else {
-                return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-            }
-        }
-
         let liveTimers = [];
 
-        if (Array.isArray(lanyardData.activities)) {
-            lanyardData.activities.forEach((activity, idx) => {
-                if (activity.type === 4) {
-                    let emoji = "";
-                    if (activity.emoji) {
-                        if (activity.emoji.id) {
-                            const ext = activity.emoji.animated ? "gif" : "png";
-                            const emojiUrl = `https://cdn.discordapp.com/emojis/${activity.emoji.id}.${ext}`;
-                            emoji = `<img class="discord-custom-emoji" src="${emojiUrl}" alt="${escape(activity.emoji.name)}" title=":${activity.emoji.name}:">`;
-                        } else {
-                            emoji = escape(activity.emoji.name);
-                        }
-                    }
-                    const statusText = escape(activity.state || "");
-                    html += `
-                        <div class="discord-activity-card">
-                            <div class="discord-activity-card-body">
-                                <div class="discord-activity-card-text">
-                                    <div class="discord-activity-card-details">${emoji} ${statusText}</div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    return;
-                }
+        let spotifyData = lanyardData.spotify;
+        let activities = Array.isArray(lanyardData.activities) ? [...lanyardData.activities] : [];
+        if (spotifyData) {
+            activities = activities.filter(
+                act => !(act.type === 2 && act.id && act.id.startsWith("spotify:"))
+            );
+        }
 
-                const largeImageURL = toURL(activity.assets?.large_image, null, activity.application_id);
-                const smallImageURL = toURL(activity.assets?.small_image, null, activity.application_id);
-                const activityTypeLabels = {
-                    0: "🎮 Playing",
-                    1: "🎥 Streaming",
-                    2: "🎧 Listening to",
-                    3: "👀 Watching",
-                    5: "🏆 Competing in"
-                };
-                const activityLabel = activityTypeLabels[activity.type] || escape(activity.name);
-                const activityDetails = activity.details ? escape(activity.details) : "";
-                const activityMeta = activity.state ? escape(activity.state) : "";
-
-                let timeDetails = "";
-                if (activity.timestamps && activity.timestamps.start) {
-                    if (activity.timestamps.end) {
-                        const playedMs = activity.timestamps.end - activity.timestamps.start;
-                        if (playedMs > 0) {
-                            timeDetails = `<div class="discord-activity-card-time">Active for ${formatDuration(playedMs)}</div>`;
-                        }
+        activities.forEach((activity, idx) => {
+            if (activity.type === 4) {
+                let emoji = "";
+                if (activity.emoji) {
+                    if (activity.emoji.id) {
+                        const ext = activity.emoji.animated ? "gif" : "png";
+                        const emojiUrl = `https://cdn.discordapp.com/emojis/${activity.emoji.id}.${ext}`;
+                        emoji = `<img class="discord-custom-emoji" src="${emojiUrl}" alt="${escape(activity.emoji.name)}" title=":${activity.emoji.name}:">`;
                     } else {
-                        const timerId = `discord-activity-timer-${idx}`;
-                        const start = activity.timestamps.start;
-                        timeDetails = `<div class="discord-activity-card-time"><span id="${timerId}">${formatDuration(Date.now() - start)}</span> elapsed</div>`;
-                        liveTimers.push({ id: timerId, start });
+                        emoji = escape(activity.emoji.name);
                     }
                 }
-
+                const statusText = escape(activity.state || "");
                 html += `
                     <div class="discord-activity-card">
-                        <div class="discord-activity-card-header">
-                            ${activityLabel}
-                        </div>
                         <div class="discord-activity-card-body">
-                            ${largeImageURL ? `
-                                <div class="discord-activity-card-assets">
-                                    <img class="discord-activity-card-large hover-action" src="${largeImageURL}" title="${escape(activity.assets.large_text)}">
-                                    ${smallImageURL ? `<img class="discord-activity-card-small hover-action" src="${smallImageURL}" title="${escape(activity.assets.small_text)}">` : ""}
-                                </div>` : ""
-                            }
                             <div class="discord-activity-card-text">
-                                <div class="discord-activity-card-title">
-                                    ${escape(activity.name)}
-                                    ${activity.platform ? `
-                                        <img class="discord-badge hover-action" src="assets/${activity.platform}.svg" alt="platform" title="${activity.platform[0].toUpperCase() + activity.platform.slice(1).toLowerCase()}">
-                                        ` : ""
-                                    }
-                                </div>
-                                ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
-                                ${activityMeta ? `<div class="discord-activity-card-meta">${activityMeta}</div>` : ""}
-                                ${timeDetails}
+                                <div class="discord-activity-card-details">${emoji} ${statusText}</div>
                             </div>
                         </div>
                     </div>
                 `;
-            });
+                return;
+            }
+
+            let largeImageURL = toURL(activity.assets?.large_image, null, activity.application_id);
+            const smallImageURL = toURL(activity.assets?.small_image, null, activity.application_id);
+            if (!largeImageURL) {
+                largeImageURL = "assets/app-icons/default.svg";
+            }
+            const activityLabel = ACTIVITY_LABELS[activity.type] || escape(activity.name);
+            const activityDetails = activity.details ? escape(activity.details) : "";
+            const activityMeta = activity.state ? escape(activity.state) : "";
+
+            let timeDetails = renderTimeDetails(activity.timestamps, idx, liveTimers);
+            let platformDetails = activity.platform ? PLATFORM_TYPES[activity.platform] : null;
+
+            let largeImageTitle = activity.name;
+            if (activity.assets && activity.assets.large_text) {
+                largeImageTitle = escape(activity.assets.large_text);
+            } else if (activity.details) {
+                largeImageTitle = escape(activity.details);
+            }
+
+            html += `
+                <div class="discord-activity-card">
+                    <div class="discord-activity-card-header">
+                        ${activityLabel}
+                    </div>
+                    <div class="discord-activity-card-body">
+                        ${largeImageURL ? `
+                            <div class="discord-activity-card-assets">
+                                <img class="discord-activity-card-large hover-action" src="${largeImageURL}" title="${largeImageTitle}">
+                                ${smallImageURL ? `<img class="discord-activity-card-small hover-action" src="${smallImageURL}" title="${escape(activity.assets.small_text)}">` : ""}
+                            </div>` : ""
+                        }
+                        <div class="discord-activity-card-text">
+                            <div class="discord-activity-card-title">
+                                ${escape(activity.name)}
+                                ${
+                                    platformDetails
+                                        ? `<img class="discord-badge hover-action" src="${platformDetails.asset}" alt="platform" title="${platformDetails.title}">`
+                                        : ""
+                                }
+                            </div>
+                            ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
+                            ${activityMeta ? `<div class="discord-activity-card-meta">${activityMeta}</div>` : ""}
+                            ${timeDetails}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        if (spotifyData) {
+            let timeDetails = renderTimeDetails(spotifyData.timestamps, "spotify", liveTimers);
+            html += `
+                <div class="discord-activity-card">
+                    <div class="discord-activity-card-header">
+                        ${ACTIVITY_LABELS[2]}
+                    </div>
+                    <div class="discord-activity-card-body">
+                        <div class="discord-activity-card-assets">
+                            <img class="discord-activity-card-large hover-action" src="${escape(spotifyData.album_art_url)}" title="${escape(spotifyData.album)}">
+                        </div>
+                        <div class="discord-activity-card-text">
+                            <div class="discord-activity-card-title">
+                                ${escape(spotifyData.song)}
+                            </div>
+                            <div class="discord-activity-card-details">${escape(spotifyData.artist)}</div>
+                            <div class="discord-activity-card-meta">${escape(spotifyData.album)}</div>
+                            ${timeDetails}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         card.innerHTML = html;
@@ -271,7 +409,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }, 1000);
         }
     } catch (e) {
-        card.innerHTML = `<em>Could not load Discord status.</em>`;
+        card.innerHTML = `<em>Could not load Discord status.<br>${escape(e.stack)}</em>`;
         console.error(e);
     }
 });
