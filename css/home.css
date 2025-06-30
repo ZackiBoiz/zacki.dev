@@ -166,12 +166,35 @@
     gap: 0.8vw;
 }
 
+.discord-avatar-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25vw;
+    height: 3.25vw;
+}
+
 .discord-avatar {
-    width: 2.8vw;
-    height: 2.8vw;
+    width: 3vw;
+    height: 3vw;
     border-radius: 50%;
-    border: 0.12vw solid var(--primary);
     object-fit: cover;
+    display: block;
+    position: relative;
+    z-index: 1;
+    margin: auto;
+}
+
+.discord-avatar-decoration {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3.5vw;
+    height: 3.5vw;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2;
 }
 
 .discord-names {

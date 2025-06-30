@@ -244,7 +244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return Object.keys(BADGES).map(flag => {
             if ((flags & flag) === Number(flag)) {
                 const badge = BADGES[flag];
-                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="badge" title="${badge.title}">`;
+                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="Badge" title="${badge.title}">`;
             }
             return "";
         }).join("");
@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return Object.keys(FLAIRS).map(flair => {
             if (flairs[flair]) {
                 const badge = FLAIRS[flair];
-                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="flair" title="${badge.title}">`;
+                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="Flair" title="${badge.title}">`;
             }
             return "";
         }).join("");
@@ -299,6 +299,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             avatarURL: discordUser.avatar
                 ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`
                 : `https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png`,
+            avatarDecorationURL: discordUser.avatar_decoration_data && discordUser.avatar_decoration_data.asset
+                ? `https://cdn.discordapp.com/avatar-decoration-presets/${discordUser.avatar_decoration_data.asset}.png?size=128`
+                : null,
             username: escape(discordUser.username),
             discriminator: discordUser.discriminator === "0" ? null : discordUser.discriminator,
             globalName: escape(discordUser.global_name || ""),
@@ -324,7 +327,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         let html = `
             <div class="discord-header">
-                <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
+                <span class="discord-avatar-wrapper">
+                    <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
+                    ${
+                        userInfo.avatarDecorationURL
+                            ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
+                            : ""
+                    }
+                </span>
                 <div class="discord-names">
                     <span class="discord-global">
                         ${displayGlobalName}
@@ -431,7 +441,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 ${
                                     platformDetails
                                         ? platformDetails.asset 
-                                            ? `<img class="discord-badge hover-action" src="${platformDetails.asset}" alt="platform" title="${platformDetails.title}">`
+                                            ? `<img class="discord-badge hover-action" src="${platformDetails.asset}" alt="Platform" title="${platformDetails.title}">`
                                             : platformDetails.icon
                                                 ? `<i class="blurple discord-badge hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
                                                 : ""
