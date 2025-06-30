@@ -168,7 +168,7 @@
 }
 
 .discord-banner,
-.discord-banner img {
+.discord-banner .discord-banner-image {
     width: 100%;
     margin: 0;
     padding: 0;
@@ -180,7 +180,7 @@
     overflow: hidden;
 }
 
-.discord-banner img {
+.discord-banner .discord-banner-image {
     height: 5vw;
 }
 

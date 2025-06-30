@@ -470,6 +470,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function mergeProfileLanyard(profile, lanyard) {
+        console.log(lanyard);
+        console.log(profile);
         if (!profile) return lanyard;
         const merged = { ...lanyard };
         merged.discord_user = {
@@ -502,6 +504,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             merged.discord_user.primary_guild = lanyard.discord_user.primary_guild;
         }
 
+        console.log(merged);
         return merged;
     }
 
@@ -541,11 +544,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             let bannerURL = await getUserBannerURL(discordUser);
 
-            const accentColor = discordUser.accent_color
-                ? (typeof discordUser.accent_color === "number"
-                    ? `#${discordUser.accent_color.toString(16).padStart(6, "0")}`
-                    : discordUser.accent_color)
-                : null;
+            const accentColor = discordUser.banner_color 
+                ? discordUser.banner_color
+                : discordUser.accent_color
+                    ? (typeof discordUser.accent_color === "number"
+                        ? `#${discordUser.accent_color.toString(16).padStart(6, "0")}`
+                        : discordUser.accent_color)
+                    : null;
 
             const userInfo = {
                 avatarURL,
@@ -588,7 +593,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             let html = "";
 
             if (bannerURL) {
-                html += `<div class="discord-banner"><img src="${bannerURL}" alt="User Banner"></div>`;
+                html += `<div class="discord-banner"><img class="discord-banner-image" src="${bannerURL}" alt="User Banner"></div>`;
+            } else if (userInfo.accentColor) {
+                html += `<div class="discord-banner"><div class="discord-banner-image" style="background: ${userInfo.accentColor};"></div></div>`;
             }
 
             html += `<div class="discord-info">`;
