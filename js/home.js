@@ -518,9 +518,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function renderDiscordCard(lanyardData) {
         try {
             // renderLoadingCard(); // show loading state while rendering
-            if (!lanyardData || !lanyardData.discord_user) {
-                renderFallbackCard("No Discord user data.");
-                return;
+            if (
+                !lanyardData ||
+                !lanyardData.discord_user ||
+                (Object.keys(lanyardData.discord_user).length === 0 && lanyardData.discord_user.constructor === Object)
+            ) {
+                return renderFallbackCard("No Discord user data. They may not be linked with Lanyard.");
             }
             if (window._lanyardLiveTimersIntervals && Array.isArray(window._lanyardLiveTimersIntervals)) {
                 window._lanyardLiveTimersIntervals.forEach(intervalId => clearInterval(intervalId));
@@ -774,9 +777,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }, 1000);
                 window._lanyardLiveTimersIntervals.push(intervalId);
             }
-        } catch (err) {
-            renderFallbackCard("Error rendering Discord card.");
-            console.error("Discord card error:", err);
+        } catch (e) {
+            renderFallbackCard(`Error rendering Discord card.\n\n${e.stack}`);
+            return console.error("Discord card error:", e);
         }
     }
 
@@ -785,9 +788,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             const profile = await fetchDstnProfile(LANYARD_USER_ID);
             const merged = mergeProfileLanyard(profile, presence);
             await renderDiscordCard(merged);
-        } catch (err) {
-            renderFallbackCard("Error updating presence.");
-            console.error("Presence update error:", err);
+        } catch (e) {
+            renderFallbackCard(`Error updating presence.\n\n${e.stack}`);
+            return console.error("Presence update error:", e);
         }
     }
 
@@ -876,8 +879,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         connectLanyardWS();
-    } catch (err) {
-        renderFallbackCard("Could not connect to Discord status.");
-        console.error("Initial connection error:", err);
+    } catch (e) {
+        renderFallbackCard(`Could not connect to Discord status.\n\n${e.stack}`);
+        console.error("Initial connection error:", e);
     }
 });
