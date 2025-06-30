@@ -369,7 +369,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 avatarURL = "assets/app-icons/default.svg";
             }
 
-            // --- Banner logic ---
             let bannerURL = await getUserBannerURL(discordUser.id);
 
             const userInfo = {
@@ -405,26 +404,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             let html = "";
 
-            // Banner (full width, no padding)
             if (bannerURL) {
                 html += `<div class="discord-banner"><img src="${bannerURL}" alt="User Banner"></div>`;
             }
 
-            // Start info wrapper
             html += `<div class="discord-info">`;
 
             html += `
                 <div class="discord-header">
                     ${userInfo.nameplateAsset
-                    ? `<video class="discord-nameplate" src="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}asset.webm" poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png" autoplay loop muted playsinline></video>`
-                    : ""
-                }
+                        ? `<video class="discord-nameplate" src="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}asset.webm" poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png" autoplay loop muted playsinline></video>`
+                        : ""
+                    }
                     <span class="discord-avatar-wrapper">
                         <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
                         ${userInfo.avatarDecorationURL
-                    ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
-                    : ""
-                }
+                            ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
+                            : ""
+                        }
                         <span class="discord-status-badge">
                             <i class="fas ${status.icon} discord-icon hover-action ${status.color}" title="${status.name}"></i>
                         </span>
@@ -444,7 +441,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             <img src="${userInfo.guild.tagURL}" alt="Guild tag">
                             ${userInfo.guild.tag}
                         </span>` : ""
-                }
+                    }
                 </div>
             `;
 
@@ -524,18 +521,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     <img class="discord-activity-card-large hover-action" src="${largeImageURL}" title="${largeImageTitle}">
                                     ${smallImageURL ? `<img class="discord-activity-card-small hover-action" src="${smallImageURL}" title="${escape(activity.assets?.small_text || "")}">` : ""}
                                 </div>` : ""
-                    }
+                            }
                             <div class="discord-activity-card-text">
                                 <div class="discord-activity-card-title">
                                     ${escape(activity.name || "")}
                                     ${platformDetails
-                        ? platformDetails.asset
-                            ? `<img class="discord-icon hover-action" src="${platformDetails.asset}" alt="Platform" title="${platformDetails.title}">`
-                            : platformDetails.icon
-                                ? `<i class="blurple discord-icon hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
-                                : ""
-                        : activity.platform ? "unknown platform" : ""
-                    }
+                                        ? platformDetails.asset
+                                            ? `<img class="discord-icon hover-action" src="${platformDetails.asset}" alt="Platform" title="${platformDetails.title}">`
+                                            : platformDetails.icon
+                                                ? `<i class="blurple discord-icon hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
+                                                : ""
+                                        : activity.platform ? "unknown platform" : ""
+                                    }
                                 </div>
                                 ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
                                 ${activityMeta ? `<div class="discord-activity-card-meta">${activityMeta}</div>` : ""}
@@ -573,10 +570,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </div>
                 `;
             }
-
-            // End info wrapper
             html += `</div>`;
-
             card.innerHTML = html;
 
             if (liveTimers.length > 0) {
