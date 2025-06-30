@@ -332,7 +332,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 : null,
             username: escape(discordUser.username),
             discriminator: discordUser.discriminator === "0" ? null : discordUser.discriminator,
-            globalName: escape(discordUser.global_name || ""),
+            globalName: escape(discordUser.global_name || discordUser.username),
             guild: discordUser.primary_guild && discordUser.primary_guild.tag ? {
                 tag: escape(discordUser.primary_guild.tag),
                 tagURL: `https://cdn.discordapp.com/clan-badges/${discordUser.primary_guild.identity_guild_id}/${discordUser.primary_guild.badge}.png?size=64`
@@ -348,23 +348,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         let flairsHtml = renderFlairs(userInfo.flairs, USER_FLAIRS);
         let badgesHtml = renderBadges(userInfo.publicFlags, USER_BADGES);
 
-        let showGlobalName = userInfo.globalName && userInfo.globalName.trim().length > 0;
-        let displayGlobalName = showGlobalName
-            ? userInfo.globalName
-            : `${userInfo.username}${userInfo.discriminator ? `#${userInfo.discriminator}` : ""}`;
+        let displayGlobalName = userInfo.globalName;
+        let displayUsername = `${userInfo.username}${userInfo.discriminator ? `#${userInfo.discriminator}` : ""}`;
 
         let html = `
             <div class="discord-header">
                 ${userInfo.nameplateAsset
-                ? `<video class="discord-nameplate" src="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}asset.webm" poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png" autoplay loop muted playsinline></video>`
-                : ""
-            }
+                    ? `<video class="discord-nameplate" src="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}asset.webm" poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png" autoplay loop muted playsinline></video>`
+                    : ""
+                }
                 <span class="discord-avatar-wrapper">
                     <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
                     ${userInfo.avatarDecorationURL
-                ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
-                : ""
-            }
+                        ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
+                        : ""
+                    }
                     <span class="discord-status-badge">
                         <i class="fas ${status.icon} discord-icon hover-action ${status.color}" title="${status.name}"></i>
                     </span>
@@ -375,16 +373,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <span class="discord-icons">${flairsHtml}</span>
                         <span class="discord-icons">${badgesHtml}</span>
                     </span>
-                    ${showGlobalName ? `<span class="discord-username">
-                        ${userInfo.username + (userInfo.discriminator ? `#${userInfo.discriminator}` : "")}
-                    </span>` : ""}
+                    <span class="discord-username">
+                        ${displayUsername}
+                    </span>
                 </div>
                 ${userInfo.guild ? `
                     <span class="discord-guild-tag hover-action" title="${userInfo.guild.tag} tag">
                         <img src="${userInfo.guild.tagURL}" alt="Guild tag">
                         ${userInfo.guild.tag}
                     </span>` : ""
-            }
+                }
             </div>
         `;
 
@@ -464,18 +462,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 <img class="discord-activity-card-large hover-action" src="${largeImageURL}" title="${largeImageTitle}">
                                 ${smallImageURL ? `<img class="discord-activity-card-small hover-action" src="${smallImageURL}" title="${escape(activity.assets.small_text)}">` : ""}
                             </div>` : ""
-                }
+                        }
                         <div class="discord-activity-card-text">
                             <div class="discord-activity-card-title">
                                 ${escape(activity.name)}
                                 ${platformDetails
-                    ? platformDetails.asset
-                        ? `<img class="discord-icon hover-action" src="${platformDetails.asset}" alt="Platform" title="${platformDetails.title}">`
-                        : platformDetails.icon
-                            ? `<i class="blurple discord-icon hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
-                            : ""
-                    : activity.platform ? "unknown platform" : ""
-                }
+                                    ? platformDetails.asset
+                                        ? `<img class="discord-icon hover-action" src="${platformDetails.asset}" alt="Platform" title="${platformDetails.title}">`
+                                        : platformDetails.icon
+                                            ? `<i class="blurple discord-icon hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
+                                            : ""
+                                    : activity.platform ? "unknown platform" : ""
+                                }
                             </div>
                             ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
                             ${activityMeta ? `<div class="discord-activity-card-meta">${activityMeta}</div>` : ""}
