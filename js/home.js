@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!card) return;
 
     const LANYARD_USER_ID = "900442235760443442";
+    const WS_URL = "wss://api.lanyard.rest/socket";
 
     const STATUS_ICONS = {
         online: {
@@ -201,6 +202,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         [ACTIVITY_TYPES.COMPETING]: "🏆 Competing in"
     };
 
+    const LANYARD_OPS = {
+        EVENT: 0,
+        HELLO: 1,
+        INITIALIZE: 2,
+        HEARTBEAT: 3
+    };
+
+    const LANYARD_EVENTS = {
+        INIT_STATE: "INIT_STATE",
+        PRESENCE_UPDATE: "PRESENCE_UPDATE"
+    }
+
     function escape(str = "") {
         return str
             .replaceAll("&", "&amp;")
@@ -215,7 +228,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (imgKey.startsWith("mp:external/")) {
             const match = imgKey.match(/mp:external\/([^/]+\/https?\/.+)/);
             if (match) {
-                console.log(match);
                 return "https://media.discordapp.net/external/" + match[1];
             }
         }
@@ -244,7 +256,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return Object.keys(BADGES).map(flag => {
             if ((flags & flag) === Number(flag)) {
                 const badge = BADGES[flag];
-                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="Badge" title="${badge.title}">`;
+                return `<img class="discord-icon hover-action" src="${badge.asset}" alt="Badge" title="${badge.title}">`;
             }
             return "";
         }).join("");
@@ -255,7 +267,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return Object.keys(FLAIRS).map(flair => {
             if (flairs[flair]) {
                 const badge = FLAIRS[flair];
-                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="Flair" title="${badge.title}">`;
+                return `<img class="discord-icon hover-action" src="${badge.asset}" alt="Flair" title="${badge.title}">`;
             }
             return "";
         }).join("");
@@ -285,20 +297,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         return "";
     }
 
-    try {
-        const response = await fetch(`https://api.lanyard.rest/v1/users/${LANYARD_USER_ID}`);
-        const json = await response.json();
-        if (json.success === false) {
-            card.innerHTML = `<em>Could not load Discord status.<br>${json.error && json.error.message ? escape(json.error.message) : "Could not load Discord status."}</em>`;
-            return;
-        }
-        const { data: lanyardData } = json;
+    async function getAvatarUrl(userId, avatarHash) {
+        if (!avatarHash) return `https://cdn.discordapp.com/embed/avatars/0.png`;
+
+        const gifUrl = `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.gif?size=128`;
+        try {
+            const res = await fetch(gifUrl, { // check if the avatar is animated
+                method: "HEAD"
+            });
+            if (res.status === 200) {
+                return gifUrl;
+            }
+        } catch (e) { }
+
+        return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png?size=128`;
+    }
+
+    async function renderDiscordCard(lanyardData) {
         const discordUser = lanyardData.discord_user;
         const discordStatus = lanyardData.discord_status || "offline";
+        let avatarURL;
+        if (discordUser.avatar) {
+            avatarURL = await getAvatarUrl(discordUser.id, discordUser.avatar);
+        } else {
+            avatarURL = `https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png`;
+        }
         const userInfo = {
-            avatarURL: discordUser.avatar
-                ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`
-                : `https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png`,
+            avatarURL,
             avatarDecorationURL: discordUser.avatar_decoration_data && discordUser.avatar_decoration_data.asset
                 ? `https://cdn.discordapp.com/avatar-decoration-presets/${discordUser.avatar_decoration_data.asset}.png?size=128`
                 : null,
@@ -319,7 +344,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
 
         const status = STATUS_ICONS[discordStatus] || STATUS_ICONS.offline;
-        
+
         let flairsHtml = renderFlairs(userInfo.flairs, USER_FLAIRS);
         let badgesHtml = renderBadges(userInfo.publicFlags, USER_BADGES);
 
@@ -330,24 +355,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         let html = `
             <div class="discord-header">
-                ${
-                    userInfo.nameplateAsset
-                        ? `<video class="discord-nameplate" src="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}asset.webm" poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png" autoplay loop muted playsinline></video>`
-                        : ""
-                }
+                ${userInfo.nameplateAsset
+                ? `<video class="discord-nameplate" src="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}asset.webm" poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png" autoplay loop muted playsinline></video>`
+                : ""
+            }
                 <span class="discord-avatar-wrapper">
                     <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
-                    ${
-                        userInfo.avatarDecorationURL
-                            ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
-                            : ""
-                    }
+                    ${userInfo.avatarDecorationURL
+                ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
+                : ""
+            }
                 </span>
                 <div class="discord-names">
                     <span class="discord-global">
                         ${displayGlobalName}
-                        <span class="discord-badges">${flairsHtml}</span>
-                        <span class="discord-badges">${badgesHtml}</span>
+                        <span class="discord-icons">${flairsHtml}</span>
+                        <span class="discord-icons">${badgesHtml}</span>
                     </span>
                     ${showGlobalName ? `<span class="discord-username">
                         ${userInfo.username + (userInfo.discriminator ? `#${userInfo.discriminator}` : "")}
@@ -358,7 +381,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <img src="${userInfo.guild.tagURL}" alt="Guild tag">
                         ${userInfo.guild.tag}
                     </span>` : ""
-                }
+            }
             </div>
             <div class="discord-status">
                 <i class="fas ${status.icon} ${status.color}"></i>
@@ -432,7 +455,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             html += `
                 <div class="discord-activity-card">
-                    <div class="discord-activity-card-header" style="display:flex;align-items:center;justify-content:space-between;">
+                    <div class="discord-activity-card-header">
                         <span>${activityLabel}</span>
                         ${activityButtons}
                     </div>
@@ -442,19 +465,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 <img class="discord-activity-card-large hover-action" src="${largeImageURL}" title="${largeImageTitle}">
                                 ${smallImageURL ? `<img class="discord-activity-card-small hover-action" src="${smallImageURL}" title="${escape(activity.assets.small_text)}">` : ""}
                             </div>` : ""
-                        }
+                }
                         <div class="discord-activity-card-text">
                             <div class="discord-activity-card-title">
                                 ${escape(activity.name)}
-                                ${
-                                    platformDetails
-                                        ? platformDetails.asset 
-                                            ? `<img class="discord-badge hover-action" src="${platformDetails.asset}" alt="Platform" title="${platformDetails.title}">`
-                                            : platformDetails.icon
-                                                ? `<i class="blurple discord-badge hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
-                                                : ""
-                                        : activity.platform ? "unknown platform" : ""
-                                }
+                                ${platformDetails
+                    ? platformDetails.asset
+                        ? `<img class="discord-icon hover-action" src="${platformDetails.asset}" alt="Platform" title="${platformDetails.title}">`
+                        : platformDetails.icon
+                            ? `<i class="blurple discord-icon hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
+                            : ""
+                    : activity.platform ? "unknown platform" : ""
+                }
                             </div>
                             ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
                             ${activityMeta ? `<div class="discord-activity-card-meta">${activityMeta}</div>` : ""}
@@ -509,8 +531,90 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
             }, 1000);
         }
-    } catch (e) {
-        card.innerHTML = `<em>Could not load Discord status.<br>${escape(e.stack)}</em>`;
-        console.error(e);
     }
+
+    function handlePresence(presence) {
+        if (window._lanyardLiveTimersInterval) {
+            clearInterval(window._lanyardLiveTimersInterval);
+            window._lanyardLiveTimersInterval = null;
+        }
+        renderDiscordCard(presence);
+    }
+
+    function connectLanyardWS() {
+        let ws;
+        let heartbeatInterval = null;
+        let reconnectTimeout = null;
+
+        function cleanup() {
+            if (ws) {
+                ws.onclose = ws.onerror = ws.onmessage = ws.onopen = null;
+                ws.close();
+                ws = null;
+            }
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
+            }
+            if (reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
+                reconnectTimeout = null;
+            }
+        }
+
+        function start() {
+            ws = new WebSocket(WS_URL);
+
+            ws.onopen = () => {
+                console.log("opened lanyard websocket");
+            };
+
+            ws.onmessage = (event) => {
+                let msg;
+                try {
+                    msg = JSON.parse(event.data);
+                } catch (e) {
+                    return;
+                }
+                if (msg.op === LANYARD_OPS.HELLO) {
+                    console.log("got hello");
+
+                    const interval = msg.d.heartbeat_interval;
+                    ws.send(JSON.stringify({
+                        op: LANYARD_OPS.INITIALIZE,
+                        d: {
+                            subscribe_to_id: LANYARD_USER_ID
+                        }
+                    }));
+
+                    heartbeatInterval = setInterval(() => {
+                        ws.send(JSON.stringify({
+                            op: LANYARD_OPS.HEARTBEAT
+                        }));
+                    }, interval);
+                } else if (msg.op === LANYARD_OPS.EVENT) {
+                    console.log(msg.d);
+                    if (msg.t === LANYARD_EVENTS.INIT_STATE) {
+                        handlePresence(msg.d);
+                    } else if (msg.t === LANYARD_EVENTS.PRESENCE_UPDATE) {
+                        handlePresence(msg.d);
+                    }
+                }
+            };
+
+            ws.onerror = () => {
+                cleanup();
+                reconnectTimeout = setTimeout(start, 2000);
+            };
+
+            ws.onclose = () => {
+                cleanup();
+                reconnectTimeout = setTimeout(start, 2000);
+            };
+        }
+
+        start();
+    }
+
+    connectLanyardWS();
 });

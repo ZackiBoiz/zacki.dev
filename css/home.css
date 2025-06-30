@@ -225,13 +225,13 @@
     align-items: center;
 }
 
-.discord-badges {
+.discord-icons {
     display: inline-flex;
     align-items: center;
     margin-left: 0.3vw;
 }
 
-.discord-badge {
+.discord-icon {
     width: 1.5vw;
     margin-right: 0.2vw;
     object-fit: contain;
@@ -294,6 +294,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: bold;
+    justify-content: space-between;
 }
 
 .discord-activity-card .discord-activity-card-body {
