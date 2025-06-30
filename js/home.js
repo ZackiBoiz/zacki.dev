@@ -122,6 +122,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             title: "Desktop",
             asset: "assets/platforms/desktop.svg"
         },
+        windows: {
+            title: "Desktop (Windows)",
+            asset: "assets/platforms/desktop.svg"
+        },
+        macos: {
+            title: "Desktop (MacOS)",
+            asset: "assets/platforms/desktop.svg"
+        },
+        linux: {
+            title: "Desktop (Linux)",
+            asset: "assets/platforms/desktop.svg"
+        },
         web: {
             title: "Web",
             asset: "assets/platforms/web.svg"
@@ -134,18 +146,59 @@ document.addEventListener("DOMContentLoaded", async () => {
             title: "Mobile (iOS)",
             asset: "assets/platforms/mobile.svg"
         },
+        android: {
+            title: "Mobile (Android)",
+            asset: "assets/platforms/mobile.svg"
+        },
         embedded: {
             title: "Console",
             asset: "assets/platforms/embedded.svg"
         },
+        playstation: {
+            title: "Console (PlayStation)",
+            asset: "assets/platforms/embedded.svg"
+        },
+        ps4: {
+            title: "Console (PlayStation 4)",
+            asset: "assets/platforms/embedded.svg"
+        },
+        ps5: {
+            title: "Console (PlayStation 5)",
+            asset: "assets/platforms/embedded.svg"
+        },
+        nintendo_switch: {
+            title: "Console (Nintendo Switch)",
+            icon: "assets/platforms/embedded.svg"
+        },
+        xbox: {
+            title: "Console (Xbox)",
+            icon: "fab fa-xbox"
+        },
+        steam: {
+            title: "Steam",
+            icon: "fab fa-steam"
+        },
+        epic_games_store: {
+            title: "Epic Games Store",
+            icon: "fas fa-store"
+        },
+    };
+
+    const ACTIVITY_TYPES = {
+        PLAYING: 0,
+        STREAMING: 1,
+        LISTENING: 2,
+        WATCHING: 3,
+        CUSTOM: 4,
+        COMPETING: 5
     };
 
     const ACTIVITY_LABELS = {
-        0: "🎮 Playing",
-        1: "🎥 Streaming",
-        2: "🎧 Listening to",
-        3: "👀 Watching",
-        5: "🏆 Competing in"
+        [ACTIVITY_TYPES.PLAYING]: "🎮 Playing",
+        [ACTIVITY_TYPES.STREAMING]: "🎥 Streaming",
+        [ACTIVITY_TYPES.LISTENING]: "🎧 Listening to",
+        [ACTIVITY_TYPES.WATCHING]: "👀 Watching",
+        [ACTIVITY_TYPES.COMPETING]: "🏆 Competing in"
     };
 
     function escape(str = "") {
@@ -191,7 +244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return Object.keys(BADGES).map(flag => {
             if ((flags & flag) === Number(flag)) {
                 const badge = BADGES[flag];
-                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="badge" title="${badge.title}">`;
+                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="Badge" title="${badge.title}">`;
             }
             return "";
         }).join("");
@@ -202,24 +255,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         return Object.keys(FLAIRS).map(flair => {
             if (flairs[flair]) {
                 const badge = FLAIRS[flair];
-                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="flair" title="${badge.title}">`;
+                return `<img class="discord-badge hover-action" src="${badge.asset}" alt="Flair" title="${badge.title}">`;
             }
             return "";
         }).join("");
     }
 
     function renderTimeDetails(timestamps, idxOrName, liveTimers) {
-        if (timestamps && timestamps.start) {
-            if (timestamps.end) {
-                const playedMs = timestamps.end - timestamps.start;
-                if (playedMs > 0) {
-                    return `<div class="discord-activity-card-time">Active for ${formatDuration(playedMs)}</div>`;
+        if (timestamps) {
+            if (timestamps.start) {
+                if (timestamps.end) {
+                    const playedMs = timestamps.end - timestamps.start;
+                    if (playedMs > 0) {
+                        return `<div class="discord-activity-card-time">Active for ${formatDuration(playedMs)}</div>`;
+                    }
+                } else {
+                    const timerId = `discord-activity-elapsed-timer-${idxOrName}`;
+                    const start = timestamps.start;
+                    liveTimers.push({ id: timerId, start });
+                    return `<div class="discord-activity-card-time"><span id="${timerId}">${formatDuration(Date.now() - start)}</span> elapsed</div>`;
                 }
-            } else {
-                const timerId = `discord-activity-timer-${idxOrName}`;
-                const start = timestamps.start;
-                liveTimers.push({ id: timerId, start });
-                return `<div class="discord-activity-card-time"><span id="${timerId}">${formatDuration(Date.now() - start)}</span> elapsed</div>`;
+            } else if (timestamps.end) {
+                const timerId = `discord-activity-ended-timer-${idxOrName}`;
+                const end = timestamps.end;
+                liveTimers.push({ id: timerId, end, ended: true });
+                return `<div class="discord-activity-card-time">Ended <span id="${timerId}">${formatDuration(Date.now() - end)}</span> ago</div>`;
             }
         }
         return "";
@@ -239,6 +299,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             avatarURL: discordUser.avatar
                 ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png?size=128`
                 : `https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png`,
+            avatarDecorationURL: discordUser.avatar_decoration_data && discordUser.avatar_decoration_data.asset
+                ? `https://cdn.discordapp.com/avatar-decoration-presets/${discordUser.avatar_decoration_data.asset}.png?size=128`
+                : null,
+            nameplateAsset: discordUser.collectibles && discordUser.collectibles.nameplate && discordUser.collectibles.nameplate.asset
+                ? discordUser.collectibles.nameplate.asset
+                : null,
             username: escape(discordUser.username),
             discriminator: discordUser.discriminator === "0" ? null : discordUser.discriminator,
             globalName: escape(discordUser.global_name || ""),
@@ -264,7 +330,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         let html = `
             <div class="discord-header">
-                <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
+                ${
+                    userInfo.nameplateAsset
+                        ? `<video class="discord-nameplate" src="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}asset.webm" poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png" autoplay loop muted playsinline></video>`
+                        : ""
+                }
+                <span class="discord-avatar-wrapper">
+                    <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
+                    ${
+                        userInfo.avatarDecorationURL
+                            ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
+                            : ""
+                    }
+                </span>
                 <div class="discord-names">
                     <span class="discord-global">
                         ${displayGlobalName}
@@ -299,7 +377,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         activities.forEach((activity, idx) => {
-            if (activity.type === 4) {
+            if (activity.type === ACTIVITY_TYPES.CUSTOM) {
                 let emoji = "";
                 if (activity.emoji) {
                     if (activity.emoji.id) {
@@ -342,10 +420,21 @@ document.addEventListener("DOMContentLoaded", async () => {
                 largeImageTitle = escape(activity.details);
             }
 
+            let activityButtons = "";
+            if (activity.type === ACTIVITY_TYPES.STREAMING && activity.url) {
+                activityButtons += `<a href="${escape(activity.url)}" target="_blank" class="project-btn activity-btn">Watch Stream</a>`;
+            }
+            // if (activity.buttons) {
+            //     activity.buttons.forEach(button => {
+            //         activityButtons += `<a href="#" class="project-btn activity-btn">${button}</a>`;
+            //     });
+            // }
+
             html += `
                 <div class="discord-activity-card">
-                    <div class="discord-activity-card-header">
-                        ${activityLabel}
+                    <div class="discord-activity-card-header" style="display:flex;align-items:center;justify-content:space-between;">
+                        <span>${activityLabel}</span>
+                        ${activityButtons}
                     </div>
                     <div class="discord-activity-card-body">
                         ${largeImageURL ? `
@@ -359,8 +448,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 ${escape(activity.name)}
                                 ${
                                     platformDetails
-                                        ? `<img class="discord-badge hover-action" src="${platformDetails.asset}" alt="platform" title="${platformDetails.title}">`
-                                        : ""
+                                        ? platformDetails.asset 
+                                            ? `<img class="discord-badge hover-action" src="${platformDetails.asset}" alt="Platform" title="${platformDetails.title}">`
+                                            : platformDetails.icon
+                                                ? `<i class="blurple discord-badge hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
+                                                : ""
+                                        : activity.platform ? "unknown platform" : ""
                                 }
                             </div>
                             ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
@@ -374,21 +467,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (spotifyData) {
             let timeDetails = renderTimeDetails(spotifyData.timestamps, "spotify", liveTimers);
+            const albumArtUrl = spotifyData.album_art_url || "assets/app-icons/default.svg";
+            const album = spotifyData.album ? escape(spotifyData.album) : "Unknown Album";
+            const artist = spotifyData.artist ? escape(spotifyData.artist) : "Unknown Artist";
+            const song = spotifyData.song ? escape(spotifyData.song) : "Unknown Song";
             html += `
                 <div class="discord-activity-card">
                     <div class="discord-activity-card-header">
-                        ${ACTIVITY_LABELS[2]}
+                        ${ACTIVITY_LABELS[ACTIVITY_TYPES.LISTENING]}
                     </div>
                     <div class="discord-activity-card-body">
                         <div class="discord-activity-card-assets">
-                            <img class="discord-activity-card-large hover-action" src="${escape(spotifyData.album_art_url)}" title="${escape(spotifyData.album)}">
+                            <img class="discord-activity-card-large hover-action" src="${albumArtUrl}" title="${album}">
                         </div>
                         <div class="discord-activity-card-text">
                             <div class="discord-activity-card-title">
-                                ${escape(spotifyData.song)}
+                                ${song}
                             </div>
-                            <div class="discord-activity-card-details">${escape(spotifyData.artist)}</div>
-                            <div class="discord-activity-card-meta">${escape(spotifyData.album)}</div>
+                            <div class="discord-activity-card-details">${artist}</div>
+                            <div class="discord-activity-card-meta">${album}</div>
                             ${timeDetails}
                         </div>
                     </div>
@@ -403,7 +500,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 liveTimers.forEach(timer => {
                     const el = document.getElementById(timer.id);
                     if (el) {
-                        el.textContent = formatDuration(Date.now() - timer.start);
+                        if (timer.ended) {
+                            el.textContent = formatDuration(Date.now() - timer.end);
+                        } else {
+                            el.textContent = formatDuration(Date.now() - timer.start);
+                        }
                     }
                 });
             }, 1000);

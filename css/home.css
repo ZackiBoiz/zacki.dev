@@ -121,6 +121,12 @@
     box-shadow: 0 0.2vw 0.8vw rgba(0, 0, 0, 0.10);
 }
 
+.activity-btn {
+    margin-left: auto;
+    display: inline-flex;
+    background: var(--primary-muted);
+}
+
 .projects-grid .project-card:last-child {
     margin-right: 0;
 }
@@ -158,14 +164,51 @@
     display: flex;
     align-items: center;
     gap: 0.8vw;
+    position: relative;
+    min-height: 3.5vw;
+    z-index: 0;
+}
+
+.discord-nameplate {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3.5vw;
+    object-fit: cover;
+    z-index: 0;
+    border-radius: 0.5vw;
+    pointer-events: none;
+    background: transparent;
+}
+
+.discord-avatar-wrapper,
+.discord-names,
+.discord-guild-tag {
+    position: relative;
+    z-index: 1;
 }
 
 .discord-avatar {
-    width: 2.8vw;
-    height: 2.8vw;
+    width: 3vw;
+    height: 3vw;
     border-radius: 50%;
-    border: 0.12vw solid var(--primary);
     object-fit: cover;
+    display: block;
+    position: relative;
+    z-index: 1;
+    margin: auto;
+}
+
+.discord-avatar-decoration {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3.5vw;
+    height: 3.5vw;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2;
 }
 
 .discord-names {
@@ -214,7 +257,7 @@
 
 .discord-guild-tag {
     display: inline-block;
-    background: transparent;
+    background: var(--bg-alt);
     color: var(--text);
     border: 0.125vw solid var(--border);
     border-radius: 0.5vw;
