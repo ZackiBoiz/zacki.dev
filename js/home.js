@@ -122,6 +122,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             title: "Desktop",
             asset: "assets/platforms/desktop.svg"
         },
+        windows: {
+            title: "Desktop (Windows)",
+            asset: "assets/platforms/desktop.svg"
+        },
+        macos: {
+            title: "Desktop (MacOS)",
+            asset: "assets/platforms/desktop.svg"
+        },
+        linux: {
+            title: "Desktop (Linux)",
+            asset: "assets/platforms/desktop.svg"
+        },
         web: {
             title: "Web",
             asset: "assets/platforms/web.svg"
@@ -134,9 +146,41 @@ document.addEventListener("DOMContentLoaded", async () => {
             title: "Mobile (iOS)",
             asset: "assets/platforms/mobile.svg"
         },
+        android: {
+            title: "Mobile (Android)",
+            asset: "assets/platforms/mobile.svg"
+        },
         embedded: {
             title: "Console",
             asset: "assets/platforms/embedded.svg"
+        },
+        playstation: {
+            title: "Console (PlayStation)",
+            asset: "assets/platforms/embedded.svg"
+        },
+        ps4: {
+            title: "Console (PlayStation 4)",
+            asset: "assets/platforms/embedded.svg"
+        },
+        ps5: {
+            title: "Console (PlayStation 5)",
+            asset: "assets/platforms/embedded.svg"
+        },
+        nintendo_switch: {
+            title: "Console (Nintendo Switch)",
+            icon: "assets/platforms/embedded.svg"
+        },
+        xbox: {
+            title: "Console (Xbox)",
+            icon: "fab fa-xbox"
+        },
+        steam: {
+            title: "Steam",
+            icon: "fab fa-steam"
+        },
+        epic_games_store: {
+            title: "Epic Games Store",
+            icon: "fas fa-store"
         },
     };
 
@@ -358,16 +402,21 @@ document.addEventListener("DOMContentLoaded", async () => {
                 largeImageTitle = escape(activity.details);
             }
 
-            let streamButton = "";
+            let activityButtons = "";
             if (activity.type === ACTIVITY_TYPES.STREAMING && activity.url) {
-                streamButton = `<a href="${escape(activity.url)}" target="_blank" class="project-btn activity-btn">Watch Stream</a>`;
+                activityButtons += `<a href="${escape(activity.url)}" target="_blank" class="project-btn activity-btn">Watch Stream</a>`;
             }
+            // if (activity.buttons) {
+            //     activity.buttons.forEach(button => {
+            //         activityButtons += `<a href="#" class="project-btn activity-btn">${button}</a>`;
+            //     });
+            // }
 
             html += `
                 <div class="discord-activity-card">
                     <div class="discord-activity-card-header" style="display:flex;align-items:center;justify-content:space-between;">
                         <span>${activityLabel}</span>
-                        ${streamButton}
+                        ${activityButtons}
                     </div>
                     <div class="discord-activity-card-body">
                         ${largeImageURL ? `
@@ -381,8 +430,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 ${escape(activity.name)}
                                 ${
                                     platformDetails
-                                        ? `<img class="discord-badge hover-action" src="${platformDetails.asset}" alt="platform" title="${platformDetails.title}">`
-                                        : ""
+                                        ? platformDetails.asset 
+                                            ? `<img class="discord-badge hover-action" src="${platformDetails.asset}" alt="platform" title="${platformDetails.title}">`
+                                            : platformDetails.icon
+                                                ? `<i class="blurple discord-badge hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
+                                                : ""
+                                        : activity.platform ? "unknown platform" : ""
                                 }
                             </div>
                             ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}

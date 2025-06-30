@@ -27,6 +27,8 @@
     --success-rgb: 52, 199, 89;
     --info: #2081b1;
     --info-rgb: 32, 129, 177;
+    --blurple: #5865f2;
+    --blurple-rgb: 88, 101, 242;
 }
 
 [data-theme="dark"] {
@@ -269,6 +271,9 @@ a.link:hover {
 }
 .info {
     color: var(--info);
+}
+.blurple {
+    color: var(--blurple);
 }
 .muted {
     color: var(--text-muted);
