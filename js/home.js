@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const card = document.getElementById("discord-card");
     if (!card) return;
 
-    const LANYARD_USER_ID = "156114103033790464";
+    const LANYARD_USER_ID = "900442235760443442";
 
     const STATUS_ICONS = {
         online: {
