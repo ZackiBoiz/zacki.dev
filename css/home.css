@@ -164,15 +164,29 @@
     display: flex;
     align-items: center;
     gap: 0.8vw;
+    position: relative;
+    min-height: 3.5vw;
+    z-index: 0;
 }
 
-.discord-avatar-wrapper {
+.discord-nameplate {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3.5vw;
+    object-fit: cover;
+    z-index: 0;
+    border-radius: 0.5vw;
+    pointer-events: none;
+    background: transparent;
+}
+
+.discord-avatar-wrapper,
+.discord-names,
+.discord-guild-tag {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 3.25vw;
-    height: 3.25vw;
+    z-index: 1;
 }
 
 .discord-avatar {
@@ -243,7 +257,7 @@
 
 .discord-guild-tag {
     display: inline-block;
-    background: transparent;
+    background: var(--bg-alt);
     color: var(--text);
     border: 0.125vw solid var(--border);
     border-radius: 0.5vw;

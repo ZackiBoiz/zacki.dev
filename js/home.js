@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const card = document.getElementById("discord-card");
     if (!card) return;
 
-    const LANYARD_USER_ID = "900442235760443442";
+    const LANYARD_USER_ID = "156114103033790464";
 
     const STATUS_ICONS = {
         online: {
@@ -302,6 +302,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             avatarDecorationURL: discordUser.avatar_decoration_data && discordUser.avatar_decoration_data.asset
                 ? `https://cdn.discordapp.com/avatar-decoration-presets/${discordUser.avatar_decoration_data.asset}.png?size=128`
                 : null,
+            nameplateAsset: discordUser.collectibles && discordUser.collectibles.nameplate && discordUser.collectibles.nameplate.asset
+                ? discordUser.collectibles.nameplate.asset
+                : null,
             username: escape(discordUser.username),
             discriminator: discordUser.discriminator === "0" ? null : discordUser.discriminator,
             globalName: escape(discordUser.global_name || ""),
@@ -327,6 +330,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         let html = `
             <div class="discord-header">
+                ${
+                    userInfo.nameplateAsset
+                        ? `<video class="discord-nameplate" src="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}asset.webm" poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png" autoplay loop muted playsinline></video>`
+                        : ""
+                }
                 <span class="discord-avatar-wrapper">
                     <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
                     ${
