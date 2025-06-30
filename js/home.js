@@ -365,6 +365,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
                 : ""
             }
+                    <span class="discord-status-badge">
+                        <i class="fas ${status.icon} discord-icon hover-action ${status.color}" title="${status.name}"></i>
+                    </span>
                 </span>
                 <div class="discord-names">
                     <span class="discord-global">
@@ -382,10 +385,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                         ${userInfo.guild.tag}
                     </span>` : ""
             }
-            </div>
-            <div class="discord-status">
-                <i class="fas ${status.icon} ${status.color}"></i>
-                <span>${status.name}</span>
             </div>
         `;
 
