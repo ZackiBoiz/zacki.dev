@@ -225,13 +225,13 @@
     align-items: center;
 }
 
-.discord-badges {
+.discord-icons {
     display: inline-flex;
     align-items: center;
     margin-left: 0.3vw;
 }
 
-.discord-badge {
+.discord-icon {
     width: 1.5vw;
     margin-right: 0.2vw;
     object-fit: contain;
@@ -294,6 +294,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: bold;
+    justify-content: space-between;
 }
 
 .discord-activity-card .discord-activity-card-body {
@@ -368,4 +369,36 @@
 .hover-action:hover {
     filter: brightness(0.9) contrast(1.1);
     cursor: pointer;
+}
+
+.discord-avatar-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.discord-status-badge {
+    position: absolute;
+    right: -0.1vw;
+    bottom: -0.1vw;
+    background: var(--bg);
+    border-radius: 50%;
+    box-shadow: 0 0.05vw 0.2vw rgba(0, 0, 0, 0.10);
+    width: 1vw;
+    height: 1vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 3;
+    padding: 0;
+}
+
+.discord-status-badge .discord-icon {
+    width: 1vw;
+    height: 1vw;
+    margin: 0;
+    font-size: 0.65em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
