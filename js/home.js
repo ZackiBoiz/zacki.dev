@@ -234,40 +234,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    async function getDiscordBadgeAssetUrl(key, fallback) {
-        const assetId = DISCORD_BADGE_ASSETS[key];
-        const urls = [];
-        if (assetId) urls.push(`https://cdn.discordapp.com/badge-icons/${assetId}.png`);
-        if (fallback) urls.push(fallback);
-        return await getFirstValidImageUrl(urls);
-    }
-
-    async function getUserAvatarURL(discordUser) {
-        const userId = discordUser.id;
-        const urls = [
-            `https://dcdn.dstn.to/avatars/${userId}`
-        ];
-        if (discordUser.avatar) {
-            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}.png`);
-        }
-        if (discordUser.discriminator && !isNaN(parseInt(discordUser.discriminator))) {
-            urls.push(`https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png`);
-        }
-        urls.push("assets/app-icons/default.svg");
-        return await getFirstValidImageUrl(urls);
-    }
-
-    async function getUserBannerURL(discordUser) {
-        const userId = discordUser.id;
-        const urls = [
-            `https://dcdn.dstn.to/banners/${userId}`
-        ];
-        if (discordUser.banner) {
-            urls.push(`https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}.png`);
-        }
-        return await getFirstValidImageUrl(urls);
-    }
-
     async function getAssetWithFallback(urls) {
         return await getFirstValidImageUrl(urls);
     }
@@ -292,18 +258,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!imgKey) {
             if (fallbackType === "large" && appId) {
                 urls = [
-                    `https://dcdn.dstn.to/app-icons/${appId}`,
-                    `https://cdn.discordapp.com/app-icons/${appId}.png`
+                    `https://dcdn.dstn.to/app-icons/${appId}?size=512`,
+                    `https://cdn.discordapp.com/app-icons/${appId}.png?size=512`
                 ];
             }
         } else if (typeof imgKey === "string") {
             if (imgKey.startsWith("mp:external/")) {
                 const match = imgKey.match(/mp:external\/([^/]+\/https?\/.+)/);
                 if (match) {
-                    urls = [`https://media.discordapp.net/external/${match[1]}`];
+                    urls = [`https://media.discordapp.net/external/${match[1]}?size=512`];
                 }
             } else if (/^\d+$/.test(imgKey) && appId) {
-                urls = [`https://cdn.discordapp.com/app-assets/${appId}/${imgKey}.png`];
+                urls = [`https://cdn.discordapp.com/app-assets/${appId}/${imgKey}.png?size=512`];
             }
         }
         if (!urls.length) return null;
@@ -346,6 +312,37 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <div class="discord-activity-card-text">
                             <div class="discord-activity-card-details">
                                 ${errorMsg ? escape(errorMsg) : "Could not load Discord presence."}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderLoadingCard() {
+        card.innerHTML = `
+            <div class="discord-info">
+                <div class="discord-header">
+                    <span class="discord-avatar-wrapper">
+                        <img class="discord-avatar" src="assets/app-icons/default.svg" alt="Avatar">
+                        <span class="discord-status-badge">
+                            <i class="fas fa-circle-notch fa-spin discord-icon hover-action muted" title="Loading"></i>
+                        </span>
+                    </span>
+                    <div class="discord-names">
+                        <span class="discord-global">Loading...</span>
+                        <span class="discord-username">Fetching Discord status</span>
+                    </div>
+                </div>
+                <div class="discord-activity-card">
+                    <div class="discord-activity-card-header">
+                        <span>Status</span>
+                    </div>
+                    <div class="discord-activity-card-body">
+                        <div class="discord-activity-card-text">
+                            <div class="discord-activity-card-details">
+                                Please wait while we load Discord presence.
                             </div>
                         </div>
                     </div>
@@ -407,7 +404,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function getUserBannerURL(discordUser) {
         const userId = discordUser.id;
-        const dstnUrl = `https://dcdn.dstn.to/banners/${userId}`;
+        const dstnUrl = `https://dcdn.dstn.to/banners/${userId}?size=512`;
         try {
             const res = await fetch(dstnUrl, {
                 method: "GET"
@@ -415,7 +412,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (res.ok) return dstnUrl;
         } catch { }
         if (discordUser.banner) {
-            const discordBannerUrl = `https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}.png`;
+            const discordBannerUrl = `https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}.png?size=512`;
             try {
                 const res = await fetch(discordBannerUrl, {
                     method: "HEAD"
@@ -431,39 +428,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function getUserAvatarURL(discordUser) {
         const userId = discordUser.id;
-
-        const dstnUrl = `https://dcdn.dstn.to/avatars/${userId}`;
-        try {
-            const res = await fetch(dstnUrl, {
-                method: "GET"
-            });
-            if (res.ok) return dstnUrl;
-        } catch { }
+        const urls = [
+            `https://dcdn.dstn.to/avatars/${userId}?size=512`
+        ];
         if (discordUser.avatar) {
-            const discordAvatarUrl = `https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}.png`;
-            try {
-                const res = await fetch(discordAvatarUrl, {
-                    method: "HEAD"
-                });
-                if (res.ok) return discordAvatarUrl;
-                if (res.status !== 200) {
-                    if (discordUser.discriminator && !isNaN(parseInt(discordUser.discriminator))) {
-                        return `https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png`;
-                    }
-                }
-            } catch { }
+            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}.png?size=512`);
         }
-
-        if (discordUser.discriminator && !isNaN(parseInt(discordUser.discriminator))) {
-            return `https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png`;
+        if (discordUser.discriminator && !isNaN(parseInt(discordUser.discriminator)) && discordUser.discriminator !== "0") {
+            urls.push(`https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png?size=512`);
+        } else if (!discordUser.avatar && userId) {
+            const fallbackNum = (BigInt(userId) >> 22n) % 6n;
+            urls.push(`https://cdn.discordapp.com/embed/avatars/${fallbackNum}.png?size=512`);
         }
-        return "assets/app-icons/default.svg";
+        urls.push("assets/app-icons/default.svg");
+        return await getFirstValidImageUrl(urls);
     }
 
     async function getDiscordBadgeAssetUrl(key) {
         const assetId = DISCORD_BADGE_ASSETS[key];
         if (!assetId) return null;
-        const url = `https://cdn.discordapp.com/badge-icons/${assetId}.png`;
+        const url = `https://cdn.discordapp.com/badge-icons/${assetId}.png?size=512`;
 
         return new Promise(resolve => {
             const img = new Image();
@@ -473,8 +457,67 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    async function fetchDstnProfile(userId) {
+        try {
+            const res = await fetch(`https://dcdn.dstn.to/profile/${userId}`);
+            if (!res.ok) return null;
+            const data = await res.json();
+            if (!data || Object.keys(data).length === 0) return null;
+            return data;
+        } catch {
+            return null;
+        }
+    }
+
+    function mergeProfileLanyard(profile, lanyard) {
+        if (!profile) return lanyard;
+        const merged = { ...lanyard };
+        merged.discord_user = {
+            ...lanyard.discord_user,
+            ...profile.user
+        };
+
+        if (profile.user_profile) {
+            merged.discord_user.bio = profile.user_profile.bio || profile.user.bio || "";
+            merged.discord_user.accent_color = profile.user_profile.accent_color || profile.user.accent_color;
+            merged.discord_user.pronouns = profile.user_profile.pronouns;
+        }
+
+        merged.profile_badges = Array.isArray(profile.badges) ? profile.badges : [];
+        if (profile.user && profile.user.primary_guild) {
+            merged.discord_user.primary_guild = profile.user.primary_guild;
+        }
+
+        if (profile.legacy_username) {
+            merged.discord_user.legacy_username = profile.legacy_username;
+        }
+        if (profile.connected_accounts) {
+            merged.discord_user.connected_accounts = profile.connected_accounts;
+        }
+        if (profile.user && profile.user.banner_color) {
+            merged.discord_user.banner_color = profile.user.banner_color;
+        }
+        return merged;
+    }
+
+    function renderProfileBadges(badges) {
+        if (!Array.isArray(badges) || badges.length === 0) return "";
+        return badges.map(badge => {
+            const src = badge.icon
+                ? `https://cdn.discordapp.com/badge-icons/${badge.icon}.png?size=512`
+                : "assets/badges/unknown.svg";
+            const title = badge.description || badge.id || "";
+            const link = badge.link || null;
+            const imgTag = `<img class="discord-icon hover-action" src="${src}" alt="Badge" title="${title}">`;
+            return link
+                ? `<a href="${link}" target="_blank" rel="noopener noreferrer">${imgTag}</a>`
+                : imgTag;
+        }).join("");
+    }
+
     async function renderDiscordCard(lanyardData) {
         try {
+            // renderLoadingCard(); // show loading state while rendering
             if (!lanyardData || !lanyardData.discord_user) {
                 renderFallbackCard("No Discord user data.");
                 return;
@@ -489,6 +532,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             let avatarURL = await getUserAvatarURL(discordUser);
 
             let bannerURL = await getUserBannerURL(discordUser);
+
+            const accentColor = discordUser.accent_color
+                ? (typeof discordUser.accent_color === "number"
+                    ? `#${discordUser.accent_color.toString(16).padStart(6, "0")}`
+                    : discordUser.accent_color)
+                : null;
 
             const userInfo = {
                 avatarURL,
@@ -510,13 +559,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                 publicFlags: discordUser.public_flags,
                 flairs: {
                     bot: !!discordUser.bot
-                }
+                },
+                bio: discordUser.bio || "",
+                accentColor,
+                pronouns: discordUser.pronouns || "",
+                legacyUsername: discordUser.legacy_username || ""
             };
 
             const status = STATUS_ICONS[discordStatus] || STATUS_ICONS.offline;
 
+            let badgesHtml = lanyardData.profile_badges && lanyardData.profile_badges.length > 0
+                ? renderProfileBadges(lanyardData.profile_badges)
+                : await renderBadges(userInfo.publicFlags, USER_BADGES);
+
             let flairsHtml = renderFlairs(userInfo.flairs, USER_FLAIRS);
-            let badgesHtml = await renderBadges(userInfo.publicFlags, USER_BADGES);
 
             let displayGlobalName = userInfo.globalName;
             let displayUsername = `${userInfo.username}${userInfo.discriminator ? `#${userInfo.discriminator}` : ""}`;
@@ -532,15 +588,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             html += `
                 <div class="discord-header">
                     ${userInfo.nameplateAsset
-                    ? `<video class="discord-nameplate" src="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}asset.webm" poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png" autoplay loop muted playsinline></video>`
-                    : ""
-                }
+                        ? `<video class="discord-nameplate" src="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}asset.webm" poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png" autoplay loop muted playsinline></video>`
+                        : ""
+                    }
                     <span class="discord-avatar-wrapper">
                         <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
                         ${userInfo.avatarDecorationURL
-                    ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
-                    : ""
-                }
+                            ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
+                            : ""
+                        }
                         <span class="discord-status-badge">
                             <i class="fas ${status.icon} discord-icon hover-action ${status.color}" title="${status.name}"></i>
                         </span>
@@ -564,6 +620,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 </div>
             `;
 
+            // Remove bio/pronouns/original name display
+            // if (userInfo.bio || userInfo.pronouns) {
+            //     html += `
+            //         <div class="discord-profile-extra">
+            //             ${userInfo.bio ? `<div class="discord-profile-bio">${escape(userInfo.bio)}</div>` : ""}
+            //             ${userInfo.pronouns ? `<div class="discord-profile-pronouns">${escape(userInfo.pronouns)}</div>` : ""}
+            //         </div>
+            //     `;
+            // }
+
             let liveTimers = [];
 
             let spotifyData = lanyardData.spotify;
@@ -574,14 +640,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 );
             }
 
-            activities.forEach(async (activity, idx) => {
-                if (!activity || typeof activity !== "object") return;
+            for (let idx = 0; idx < activities.length; idx++) {
+                const activity = activities[idx];
+                if (!activity || typeof activity !== "object") continue;
                 if (activity.type === ACTIVITY_TYPES.CUSTOM) {
                     let emoji = "";
                     if (activity.emoji) {
                         if (activity.emoji.id) {
                             const ext = activity.emoji.animated ? "gif" : "png";
-                            const emojiUrl = `https://cdn.discordapp.com/emojis/${activity.emoji.id}.${ext}`;
+                            const emojiUrl = `https://cdn.discordapp.com/emojis/${activity.emoji.id}.${ext}?size=128`;
                             emoji = `<img class="discord-custom-emoji" src="${emojiUrl}" alt="${escape(activity.emoji.name)}" title=":${activity.emoji.name}:">`;
                         } else if (activity.emoji.name) {
                             emoji = escape(activity.emoji.name);
@@ -597,7 +664,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             </div>
                         </div>
                     `;
-                    return;
+                    continue;
                 }
 
                 let largeImageURL = await toURL(activity.assets?.large_image, null, activity.application_id, "large");
@@ -640,18 +707,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     <img class="discord-activity-card-large hover-action" src="${largeImageURL}" title="${largeImageTitle}">
                                     ${smallImageURL ? `<img class="discord-activity-card-small hover-action" src="${smallImageURL}" title="${escape(activity.assets?.small_text || "")}">` : ""}
                                 </div>` : ""
-                    }
+                            }
                             <div class="discord-activity-card-text">
                                 <div class="discord-activity-card-title">
                                     ${escape(activity.name || "")}
                                     ${platformDetails
-                        ? platformDetails.asset
-                            ? `<img class="discord-icon hover-action" src="${platformDetails.asset}" alt="Platform" title="${platformDetails.title}">`
-                            : platformDetails.icon
-                                ? `<i class="blurple discord-icon hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
-                                : ""
-                        : activity.platform ? "unknown platform" : ""
-                    }
+                                        ? platformDetails.asset
+                                            ? `<img class="discord-icon hover-action" src="${platformDetails.asset}" alt="Platform" title="${platformDetails.title}">`
+                                            : platformDetails.icon
+                                                ? `<i class="blurple discord-icon hover-action ${platformDetails.icon}" title="${platformDetails.title}"></i>`
+                                                : ""
+                                        : activity.platform ? "unknown platform" : ""
+                                    }
                                 </div>
                                 ${activityDetails ? `<div class="discord-activity-card-details">${activityDetails}</div>` : ""}
                                 ${activityMeta ? `<div class="discord-activity-card-meta">${activityMeta}</div>` : ""}
@@ -660,7 +727,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         </div>
                     </div>
                 `;
-            });
+            }
 
             if (spotifyData) {
                 let timeDetails = renderTimeDetails(spotifyData.timestamps, "spotify", liveTimers);
@@ -713,9 +780,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    function handlePresence(presence) {
+    async function handlePresence(presence) {
         try {
-            renderDiscordCard(presence);
+            const profile = await fetchDstnProfile(LANYARD_USER_ID);
+            const merged = mergeProfileLanyard(profile, presence);
+            await renderDiscordCard(merged);
         } catch (err) {
             renderFallbackCard("Error updating presence.");
             console.error("Presence update error:", err);
@@ -744,6 +813,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         function start() {
+            renderLoadingCard();
             try {
                 ws = new WebSocket(WS_URL);
             } catch (err) {
