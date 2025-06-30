@@ -314,6 +314,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function renderDiscordCard(lanyardData) {
+        if (window._lanyardLiveTimersIntervals && Array.isArray(window._lanyardLiveTimersIntervals)) {
+            window._lanyardLiveTimersIntervals.forEach(intervalId => clearInterval(intervalId));
+        }
+        window._lanyardLiveTimersIntervals = [];
+
         const discordUser = lanyardData.discord_user;
         const discordStatus = lanyardData.discord_status || "offline";
         let avatarURL;
@@ -515,7 +520,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         card.innerHTML = html;
 
         if (liveTimers.length > 0) {
-            setInterval(() => {
+            const intervalId = setInterval(() => {
                 liveTimers.forEach(timer => {
                     const el = document.getElementById(timer.id);
                     if (el) {
@@ -527,6 +532,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                 });
             }, 1000);
+            window._lanyardLiveTimersIntervals.push(intervalId);
         }
     }
 
