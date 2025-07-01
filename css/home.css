@@ -287,16 +287,13 @@
     display: inline-flex;
     align-items: center;
     margin-left: 0.3vw;
+    gap: 0 0.2vw;
 }
 
 .discord-icon {
     width: 1.5vw;
     object-fit: contain;
     vertical-align: middle;
-}
-
-.discord-icon:not(:nth-last-of-type) {
-    margin-right: 0.2vw;
 }
 
 .discord-username {
