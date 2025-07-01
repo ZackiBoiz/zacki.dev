@@ -291,7 +291,13 @@
 }
 
 .discord-icon {
-    width: 1.5vw;
+    height: 1.5vw;
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+.discord-icon-flair {
+    height: 1vw;
     object-fit: contain;
     vertical-align: middle;
 }
@@ -328,8 +334,10 @@
     bottom: -0.1vw;
     background: var(--bg);
     border-radius: 50%;
-    width: 1vw;
-    height: 1vw;
+    min-width: 1vw;
+    min-height: 1vw;
+    width: auto;
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -338,11 +346,18 @@
     padding: 0;
 }
 
+.discord-status-badge.online-mobile {
+    padding: 0.15vw 0.05vw 0.15vw 0.05vw;
+    border-radius: 25%;
+}
+
 .discord-status-badge .discord-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 0.7vw;
+    min-height: 1vw;
+    height: auto;
     font-size: 0.5vw;
     margin: 0;
     line-height: 1;
