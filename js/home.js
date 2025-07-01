@@ -584,9 +584,59 @@ document.addEventListener("DOMContentLoaded", async () => {
             let html = "";
 
             if (bannerURL) {
-                html += `<div class="discord-banner"><img class="discord-banner-image" src="${bannerURL}" alt="User Banner"></div>`;
+                html += `
+                    <div class="discord-banner">
+                        <img class="discord-banner-image" src="${bannerURL}" alt="User Banner">
+                    </div>
+                `;
             } else if (userInfo.accentColor) {
-                html += `<div class="discord-banner"><div class="discord-banner-color" style="background: ${userInfo.accentColor};"></div></div>`;
+                html += `
+                    <div class="discord-banner">
+                        <div class="discord-banner-color" style="background: ${userInfo.accentColor};"></div>
+                    </div>
+                `;
+            } else {
+                if (userInfo.avatarURL) {
+                    const img = new window.Image();
+                    img.crossOrigin = "Anonymous";
+                    img.src = userInfo.avatarURL;
+                    await new Promise(resolve => {
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                    });
+
+                    let avgColor = null;
+                    try {
+                        const canvas = document.createElement("canvas");
+                        canvas.width = img.naturalWidth || img.width;
+                        canvas.height = img.naturalHeight || img.height;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                        let r = 0, g = 0, b = 0, count = 0;
+                        for (let i = 0; i < data.length; i += 4) {
+                            if (data[i + 3] < 128) continue;
+                            r += data[i];
+                            g += data[i + 1];
+                            b += data[i + 2];
+                            count++;
+                        }
+                        if (count > 0) {
+                            r = Math.round(r / count);
+                            g = Math.round(g / count);
+                            b = Math.round(b / count);
+                            avgColor = `rgb(${r}, ${g}, ${b})`;
+                        }
+                    } catch(e) { }
+
+                    if (avgColor) {
+                        html += `
+                            <div class="discord-banner">
+                                <div class="discord-banner-color" style="background: ${avgColor};"></div>
+                            </div>
+                        `;
+                    }
+                }
             }
 
             html += `<div class="discord-info">`;
