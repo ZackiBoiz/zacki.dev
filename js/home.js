@@ -9,22 +9,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         online: {
             name: "Online",
             asset: "assets/statuses/online.svg",
-            color: "success"
+        },
+        onlineMobile: {
+            name: "Online",
+            asset: "assets/statuses/online-mobile.svg",
+        },
+        streaming: {
+            name: "Streaming",
+            asset: "assets/statuses/streaming.svg",
         },
         idle: {
             name: "Idle",
             asset: "assets/statuses/idle.svg",
-            color: "warning"
         },
         dnd: {
             name: "Do Not Disturb",
             asset: "assets/statuses/dnd.svg",
-            color: "danger"
         },
         offline: {
             name: "Offline",
             asset: "assets/statuses/offline.svg",
-            color: "muted"
         },
     };
 
@@ -63,21 +67,41 @@ document.addEventListener("DOMContentLoaded", async () => {
         quest_completed: "7d9ae358c8c5e118768335dbe68b4fb8"
     };
 
+    const DISCORD_USER_FLAGS = {
+        STAFF: 1 << 0,
+        PARTNER: 1 << 1,
+        HYPESQUAD: 1 << 2,
+        BUG_HUNTER_LEVEL_1: 1 << 3,
+        HYPESQUAD_ONLINE_HOUSE_1: 1 << 6,
+        HYPESQUAD_ONLINE_HOUSE_2: 1 << 7,
+        HYPESQUAD_ONLINE_HOUSE_3: 1 << 8,
+        PREMIUM_EARLY_SUPPORTER: 1 << 9,
+        TEAM_PSEUDO_USER: 1 << 10,
+        BUG_HUNTER_LEVEL_2: 1 << 14,
+        VERIFIED_BOT: 1 << 16,
+        VERIFIED_DEVELOPER: 1 << 17,
+        CERTIFIED_MODERATOR: 1 << 18,
+        BOT_HTTP_INTERACTIONS: 1 << 19,
+        ACTIVE_DEVELOPER: 1 << 22,
+        BOT_COMMANDS: 1 << 23,
+        USES_AUTOMOD: 1 << 24
+    };
+
     const USER_BADGES = {
-        [1 << 0]: { key: "staff", title: "Discord Staff", fallback: "assets/badges/discordstaff.svg" },
-        [1 << 1]: { key: "partner", title: "Discord Partner", fallback: "assets/badges/discordpartner.svg" },
-        [1 << 2]: { key: "hypesquad", title: "HypeSquad Events", fallback: "assets/badges/hypesquadevents.svg" },
-        [1 << 3]: { key: "bug_hunter_lvl1", title: "Discord Bug Hunter", fallback: "assets/badges/discordbughunter1.svg" },
-        [1 << 6]: { key: "hypesquad_house_1", title: "HypeSquad Bravery", fallback: "assets/badges/hypesquadbravery.svg" },
-        [1 << 7]: { key: "hypesquad_house_2", title: "HypeSquad Brilliance", fallback: "assets/badges/hypesquadbrilliance.svg" },
-        [1 << 8]: { key: "hypesquad_house_3", title: "HypeSquad Balance", fallback: "assets/badges/hypesquadbalance.svg" },
-        [1 << 9]: { key: "premium_early_supporter", title: "Early Supporter", fallback: "assets/badges/earlysupporter.webp" },
-        [1 << 14]: { key: "bug_hunter_lvl2", title: "Discord Bug Hunter", fallback: "assets/badges/discordbughunter2.svg" },
-        [1 << 17]: { key: "verified_developer", title: "Early Verified Bot Developer", fallback: "assets/badges/discordbotdev.svg" },
-        [1 << 18]: { key: "certified_moderator", title: "Moderator Programs Alumni", fallback: "assets/badges/discordmod.svg" },
-        [1 << 22]: { key: "active_developer", title: "Active Developer", fallback: "assets/badges/activedeveloper.svg" },
-        [1 << 23]: { key: "bot_commands", title: "Supports Commands", fallback: "assets/badges/supportscommands.svg" },
-        [1 << 24]: { key: "automod", title: "Uses Automod", fallback: "assets/badges/automod.svg" }
+        [DISCORD_USER_FLAGS.STAFF]: { key: "staff", title: "Discord Staff", fallback: "assets/badges/discordstaff.svg" },
+        [DISCORD_USER_FLAGS.PARTNER]: { key: "partner", title: "Discord Partner", fallback: "assets/badges/discordpartner.svg" },
+        [DISCORD_USER_FLAGS.HYPESQUAD]: { key: "hypesquad", title: "HypeSquad Events", fallback: "assets/badges/hypesquadevents.svg" },
+        [DISCORD_USER_FLAGS.BUG_HUNTER_LEVEL_1]: { key: "bug_hunter_lvl1", title: "Discord Bug Hunter", fallback: "assets/badges/discordbughunter1.svg" },
+        [DISCORD_USER_FLAGS.HYPESQUAD_ONLINE_HOUSE_1]: { key: "hypesquad_house_1", title: "HypeSquad Bravery", fallback: "assets/badges/hypesquadbravery.svg" },
+        [DISCORD_USER_FLAGS.HYPESQUAD_ONLINE_HOUSE_2]: { key: "hypesquad_house_2", title: "HypeSquad Brilliance", fallback: "assets/badges/hypesquadbrilliance.svg" },
+        [DISCORD_USER_FLAGS.HYPESQUAD_ONLINE_HOUSE_3]: { key: "hypesquad_house_3", title: "HypeSquad Balance", fallback: "assets/badges/hypesquadbalance.svg" },
+        [DISCORD_USER_FLAGS.PREMIUM_EARLY_SUPPORTER]: { key: "premium_early_supporter", title: "Early Supporter", fallback: "assets/badges/earlysupporter.webp" },
+        [DISCORD_USER_FLAGS.BUG_HUNTER_LEVEL_2]: { key: "bug_hunter_lvl2", title: "Discord Bug Hunter", fallback: "assets/badges/discordbughunter2.svg" },
+        [DISCORD_USER_FLAGS.VERIFIED_DEVELOPER]: { key: "verified_developer", title: "Early Verified Bot Developer", fallback: "assets/badges/discordbotdev.svg" },
+        [DISCORD_USER_FLAGS.CERTIFIED_MODERATOR]: { key: "certified_moderator", title: "Moderator Programs Alumni", fallback: "assets/badges/discordmod.svg" },
+        [DISCORD_USER_FLAGS.ACTIVE_DEVELOPER]: { key: "active_developer", title: "Active Developer", fallback: "assets/badges/activedeveloper.svg" },
+        [DISCORD_USER_FLAGS.BOT_COMMANDS]: { key: "bot_commands", title: "Supports Commands", fallback: "assets/badges/supportscommands.svg" },
+        [DISCORD_USER_FLAGS.USES_AUTOMOD]: { key: "automod", title: "Uses Automod", fallback: "assets/badges/automod.svg" }
     };
 
     const USER_FLAIRS = {
@@ -213,8 +237,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             .replaceAll("&", "&amp;")
             .replaceAll("<", "&lt;")
             .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
+            .replaceAll("\"", "&quot;")
             .replaceAll("'", "&#039;");
+    }
+
+    function hasFlag(flags, bit) {
+        return typeof flags === "number" && (flags & bit) === bit;
     }
 
     function getFirstValidImageUrl(urls) {
@@ -236,21 +264,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function getAssetWithFallback(urls) {
         return await getFirstValidImageUrl(urls);
-    }
-
-    async function renderBadges(flags, BADGES) {
-        if (!flags || typeof flags !== "number") return "";
-        const badgePromises = Object.keys(BADGES).map(async flag => {
-            if ((flags & flag) === Number(flag)) {
-                const badge = BADGES[flag];
-                if (!badge) return "";
-                const src = await getDiscordBadgeAssetUrl(badge.key, badge.fallback);
-                return `<img class="discord-icon hover-action" src="${src}" alt="Badge" title="${badge.title}">`;
-            }
-            return "";
-        });
-        const badgeHtmlArr = await Promise.all(badgePromises);
-        return badgeHtmlArr.join("");
     }
 
     async function toURL(imgKey, id, appId, fallbackType) {
@@ -290,11 +303,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function renderFallbackCard(errorMsg) {
+        const discordCardEl = card.closest(".discord-card") || card;
+        discordCardEl.classList.remove("gradient-border");
+        discordCardEl.style.background = "";
+        const infoEl = card.querySelector(".discord-info");
+        if (infoEl) infoEl.style.background = "";
+        
         card.innerHTML = `
             <div class="discord-info">
                 <div class="discord-header">
                     <span class="discord-avatar-wrapper">
-                        <img class="discord-avatar" src="assets/app-icons/default.svg" alt="Avatar">
+                        <img class="discord-avatar" src="assets/default/unknown.svg" alt="Avatar">
                         <span class="discord-status-badge">
                             <i class="fas fa-circle-dot discord-icon hover-action muted" title="Offline"></i>
                         </span>
@@ -325,9 +344,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="discord-info">
                 <div class="discord-header">
                     <span class="discord-avatar-wrapper">
-                        <img class="discord-avatar" src="assets/app-icons/default.svg" alt="Avatar">
+                        <img class="discord-avatar" src="assets/default/unknown.svg" alt="Avatar">
                         <span class="discord-status-badge">
-                            <i class="fas fa-circle-notch fa-spin discord-icon hover-action muted" title="Loading"></i>
+                            <i class="fas fa-circle-notch fa-spin discord-icon hover-action muted" title="Loading..."></i>
                         </span>
                     </span>
                     <div class="discord-names">
@@ -354,7 +373,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function renderBadges(flags, BADGES) {
         if (!flags || typeof flags !== "number") return "";
         const badgePromises = Object.keys(BADGES).map(async flag => {
-            if ((flags & flag) === Number(flag)) {
+            if (hasFlag(flags, Number(flag))) {
                 const badge = BADGES[flag];
                 if (!badge) return "";
                 const src = await getDiscordBadgeAssetUrl(badge.key, badge.fallback);
@@ -372,7 +391,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (flairs[flair]) {
                 const badge = FLAIRS[flair];
                 if (!badge) return "";
-                return `<img class="discord-icon hover-action" src="${badge.asset}" alt="Flair" title="${badge.title}">`;
+                return `<img class="discord-icon-flair hover-action" src="${badge.asset}" alt="Flair" title="${badge.title}">`;
             }
             return "";
         }).join("");
@@ -440,7 +459,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const fallbackNum = (BigInt(userId) >> 22n) % 6n;
             urls.push(`https://cdn.discordapp.com/embed/avatars/${fallbackNum}.png?size=512`);
         }
-        urls.push("assets/app-icons/default.svg");
+        urls.push("assets/default/unknown.svg");
         return await getFirstValidImageUrl(urls);
     }
 
@@ -470,6 +489,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function mergeProfileLanyard(profile, lanyard) {
+        console.log(lanyard);
+        console.log(profile);
         const merged = { ...lanyard };
 
         if (profile && Array.isArray(profile.badges) && profile.badges.length > 0) {
@@ -500,6 +521,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
 
+        console.log(merged);
         return merged;
     }
 
@@ -534,9 +556,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             window._lanyardLiveTimersIntervals = [];
 
             const discordUser = lanyardData.discord_user;
-            const discordStatus = lanyardData.discord_status || "offline";
-            let avatarURL = await getUserAvatarURL(discordUser);
+            let discordStatus = lanyardData.discord_status;
+            if (Array.isArray(lanyardData.activities)) {
+                if (lanyardData.activities.some(act => act && act.type === ACTIVITY_TYPES.STREAMING)) {
+                    discordStatus = "streaming";
+                }
+            }
+            if (lanyardData.active_on_discord_mobile && discordStatus === "online") {
+                discordStatus = "onlineMobile";
+            }
 
+            let avatarURL = await getUserAvatarURL(discordUser);
             let bannerURL = await getUserBannerURL(discordUser);
 
             const accentColor = discordUser.profile && discordUser.profile.banner_color 
@@ -566,7 +596,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 } : null,
                 publicFlags: discordUser.public_flags,
                 flairs: {
-                    bot: !!discordUser.bot
+                    bot: discordUser.bot && !hasFlag(discordUser.public_flags, DISCORD_USER_FLAGS.VERIFIED_BOT),
+                    verified_bot: discordUser.bot && hasFlag(discordUser.public_flags, DISCORD_USER_FLAGS.VERIFIED_BOT),
+                    system: discordUser.system
                 },
                 bio: discordUser.bio || "",
                 accentColor,
@@ -574,7 +606,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 legacyUsername: discordUser.legacy_username || ""
             };
 
-            const status = STATUS_ICONS[discordStatus] || STATUS_ICONS.offline;
+            const status = STATUS_ICONS[discordStatus];
 
             let badgesHtml = lanyardData.profile_badges && lanyardData.profile_badges.length > 0
                 ? renderProfileBadges(lanyardData.profile_badges)
@@ -657,9 +689,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                             ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
                             : ""
                         }
-                        <span class="discord-status-badge">
-                            <img class="discord-icon hover-action ${status.color}" src="${status.asset}" title="${status.name}">
-                        </span>
+                        ${status ? `
+                            <span class="discord-status-badge ${discordStatus === "onlineMobile" ? "online-mobile" : ""}">
+                                <img class="discord-icon hover-action" src="${status.asset}" title="${status.name}">
+                            </span>
+                            ` : ""
+                        }
                     </span>
                     <div class="discord-names">
                         <span class="discord-global">
@@ -732,7 +767,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     largeImageURL = await toURL(null, null, activity.application_id, "large");
                 }
                 if (!largeImageURL) {
-                    largeImageURL = "assets/app-icons/default.svg";
+                    largeImageURL = "assets/default/unknown.svg";
                 }
 
                 let smallImageURL = await toURL(activity.assets?.small_image, null, activity.application_id);
@@ -791,7 +826,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (spotifyData) {
                 let timeDetails = renderTimeDetails(spotifyData.timestamps, "spotify", liveTimers);
-                const albumArtUrl = spotifyData.album_art_url || "assets/app-icons/default.svg";
+                const albumArtUrl = spotifyData.album_art_url || "assets/default/unknown.svg";
                 const album = spotifyData.album ? escape(spotifyData.album) : "Unknown Album";
                 const artist = spotifyData.artist ? escape(spotifyData.artist) : "Unknown Artist";
                 const song = spotifyData.song ? escape(spotifyData.song) : "Unknown Song";
@@ -819,10 +854,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             html += `</div>`;
             card.innerHTML = html;
 
-            const discordCardEl = card.closest('.discord-card') || card;
+            const discordCardEl = card.closest(".discord-card") || card;
             discordCardEl.classList.remove("gradient-border");
             discordCardEl.style.background = "";
-            const infoEl = card.querySelector('.discord-info');
+            const infoEl = card.querySelector(".discord-info");
             if (infoEl) infoEl.style.background = "";
 
             if (
