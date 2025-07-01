@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const card = document.getElementById("discord-card");
     if (!card) return;
 
-    const LANYARD_USER_ID = "900442235760443442";
+    const LANYARD_USER_ID = "155149108183695360";
     const WS_URL = "wss://api.lanyard.rest/socket";
 
     const STATUS_ICONS = {
@@ -106,19 +106,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const USER_FLAIRS = {
         bot: {
-            title: "App",
-            asset: "assets/flairs/App.svg"
+            title: "Bot",
+            asset: "assets/flairs/Bot.svg"
         },
         verified_bot: {
-            title: "Verified App",
-            asset: "assets/flairs/VerifiedApp.svg"
+            title: "Verified Bot",
+            asset: "assets/flairs/VerifiedBot.svg"
         },
         beta: {
             title: "Beta",
             asset: "assets/flairs/Beta.svg"
         },
         ai: {
-            title: "AI",
+            title: "Artificial Intelligence",
             asset: "assets/flairs/DarkAi.svg"
         },
         official: {
