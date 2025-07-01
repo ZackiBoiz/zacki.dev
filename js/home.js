@@ -480,9 +480,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
 
         if (profile.user_profile) {
-            merged.discord_user.bio = profile.user_profile.bio || profile.user.bio || "";
-            merged.discord_user.accent_color = profile.user_profile.accent_color || profile.user.accent_color;
-            merged.discord_user.pronouns = profile.user_profile.pronouns;
+            merged.discord_user.profile = profile.user_profile;
         }
 
         merged.profile_badges = Array.isArray(profile.badges) ? profile.badges : [];
@@ -495,9 +493,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         if (profile.connected_accounts) {
             merged.discord_user.connected_accounts = profile.connected_accounts;
-        }
-        if (profile.user && profile.user.banner_color) {
-            merged.discord_user.banner_color = profile.user.banner_color;
         }
 
         console.log(merged);
@@ -540,12 +535,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             let bannerURL = await getUserBannerURL(discordUser);
 
-            const accentColor = discordUser.banner_color 
-                ? discordUser.banner_color
-                : discordUser.accent_color
-                    ? (typeof discordUser.accent_color === "number"
-                        ? `#${discordUser.accent_color.toString(16).padStart(6, "0")}`
-                        : discordUser.accent_color)
+            const accentColor = discordUser.profile && discordUser.profile.banner_color 
+                ? discordUser.profile.banner_color
+                : discordUser.profile && discordUser.profile.accent_color
+                    ? (typeof discordUser.profile.accent_color === "number"
+                        ? `#${discordUser.profile.accent_color.toString(16).padStart(6, "0")}`
+                        : discordUser.profile.accent_color)
                     : null;
 
             const userInfo = {
@@ -769,6 +764,40 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             html += `</div>`;
             card.innerHTML = html;
+
+            const discordCardEl = card.closest('.discord-card') || card;
+            discordCardEl.classList.remove("gradient-border");
+            discordCardEl.style.background = "";
+            const infoEl = card.querySelector('.discord-info');
+            if (infoEl) infoEl.style.background = "";
+
+            if (
+                discordUser.profile &&
+                Array.isArray(discordUser.profile.theme_colors) &&
+                discordUser.profile.theme_colors.length > 0
+            ) {
+                const colors = discordUser.profile.theme_colors.map(c => "#" + c.toString(16).padStart(6, "0"));
+                const gradient = `linear-gradient(to bottom, ${colors.join(", ")})`;
+                discordCardEl.classList.add("gradient-border");
+                discordCardEl.style.background = gradient;
+
+                function darken(hex, amt = 0.5) {
+                    let c = hex.replace("#", "");
+                    if (c.length === 3) c = c.split("").map(x => x + x).join("");
+                    let n = parseInt(c, 16);
+                    let r = Math.max(0, Math.floor(((n >> 16) & 0xff) * (1 - amt)));
+                    let g = Math.max(0, Math.floor(((n >> 8) & 0xff) * (1 - amt)));
+                    let b = Math.max(0, Math.floor((n & 0xff) * (1 - amt)));
+                    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+                }
+                const darkColors = colors.map(c => darken(c, 0.5));
+                const darkGradient = `linear-gradient(to bottom, ${darkColors.join(", ")})`;
+                if (infoEl) infoEl.style.background = darkGradient;
+            } else {
+                discordCardEl.classList.remove("gradient-border");
+                discordCardEl.style.background = "";
+                if (infoEl) infoEl.style.background = "";
+            }
 
             if (liveTimers.length > 0) {
                 const intervalId = setInterval(() => {
