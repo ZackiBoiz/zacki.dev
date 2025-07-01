@@ -470,6 +470,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function mergeProfileLanyard(profile, lanyard) {
+        console.log(lanyard);
+        console.log(profile);
         if (!profile) return lanyard;
         const merged = { ...lanyard };
         merged.discord_user = {
@@ -478,14 +480,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
 
         if (profile.user_profile) {
-            merged.discord_user.bio = profile.user_profile.bio || profile.user.bio || "";
-            merged.discord_user.accent_color = profile.user_profile.accent_color || profile.user.accent_color;
-            merged.discord_user.pronouns = profile.user_profile.pronouns;
+            merged.discord_user.profile = profile.user_profile;
         }
 
         merged.profile_badges = Array.isArray(profile.badges) ? profile.badges : [];
-        if (profile.user && profile.user.primary_guild) {
-            merged.discord_user.primary_guild = profile.user.primary_guild;
+        if (lanyard.discord_user && lanyard.discord_user.primary_guild) {
+            merged.discord_user.primary_guild = lanyard.discord_user.primary_guild;
         }
 
         if (profile.legacy_username) {
@@ -494,9 +494,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (profile.connected_accounts) {
             merged.discord_user.connected_accounts = profile.connected_accounts;
         }
-        if (profile.user && profile.user.banner_color) {
-            merged.discord_user.banner_color = profile.user.banner_color;
-        }
+
+        console.log(merged);
         return merged;
     }
 
@@ -518,9 +517,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function renderDiscordCard(lanyardData) {
         try {
             // renderLoadingCard(); // show loading state while rendering
-            if (!lanyardData || !lanyardData.discord_user) {
-                renderFallbackCard("No Discord user data.");
-                return;
+            if (
+                !lanyardData ||
+                !lanyardData.discord_user ||
+                (Object.keys(lanyardData.discord_user).length === 0 && lanyardData.discord_user.constructor === Object)
+            ) {
+                return renderFallbackCard("No Discord user data. They may not be linked with Lanyard.");
             }
             if (window._lanyardLiveTimersIntervals && Array.isArray(window._lanyardLiveTimersIntervals)) {
                 window._lanyardLiveTimersIntervals.forEach(intervalId => clearInterval(intervalId));
@@ -533,11 +535,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             let bannerURL = await getUserBannerURL(discordUser);
 
-            const accentColor = discordUser.accent_color
-                ? (typeof discordUser.accent_color === "number"
-                    ? `#${discordUser.accent_color.toString(16).padStart(6, "0")}`
-                    : discordUser.accent_color)
-                : null;
+            const accentColor = discordUser.profile && discordUser.profile.banner_color 
+                ? discordUser.profile.banner_color
+                : discordUser.profile && discordUser.profile.accent_color
+                    ? (typeof discordUser.profile.accent_color === "number"
+                        ? `#${discordUser.profile.accent_color.toString(16).padStart(6, "0")}`
+                        : discordUser.profile.accent_color)
+                    : null;
 
             const userInfo = {
                 avatarURL,
@@ -580,7 +584,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             let html = "";
 
             if (bannerURL) {
-                html += `<div class="discord-banner"><img src="${bannerURL}" alt="User Banner"></div>`;
+                html += `<div class="discord-banner"><img class="discord-banner-image" src="${bannerURL}" alt="User Banner"></div>`;
+            } else if (userInfo.accentColor) {
+                html += `<div class="discord-banner"><div class="discord-banner-image" style="background: ${userInfo.accentColor};"></div></div>`;
             }
 
             html += `<div class="discord-info">`;
@@ -759,6 +765,40 @@ document.addEventListener("DOMContentLoaded", async () => {
             html += `</div>`;
             card.innerHTML = html;
 
+            const discordCardEl = card.closest('.discord-card') || card;
+            discordCardEl.classList.remove("gradient-border");
+            discordCardEl.style.background = "";
+            const infoEl = card.querySelector('.discord-info');
+            if (infoEl) infoEl.style.background = "";
+
+            if (
+                discordUser.profile &&
+                Array.isArray(discordUser.profile.theme_colors) &&
+                discordUser.profile.theme_colors.length > 0
+            ) {
+                const colors = discordUser.profile.theme_colors.map(c => "#" + c.toString(16).padStart(6, "0"));
+                const gradient = `linear-gradient(to bottom, ${colors.join(", ")})`;
+                discordCardEl.classList.add("gradient-border");
+                discordCardEl.style.background = gradient;
+
+                function darken(hex, amt = 0.5) {
+                    let c = hex.replace("#", "");
+                    if (c.length === 3) c = c.split("").map(x => x + x).join("");
+                    let n = parseInt(c, 16);
+                    let r = Math.max(0, Math.floor(((n >> 16) & 0xff) * (1 - amt)));
+                    let g = Math.max(0, Math.floor(((n >> 8) & 0xff) * (1 - amt)));
+                    let b = Math.max(0, Math.floor((n & 0xff) * (1 - amt)));
+                    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+                }
+                const darkColors = colors.map(c => darken(c, 0.5));
+                const darkGradient = `linear-gradient(to bottom, ${darkColors.join(", ")})`;
+                if (infoEl) infoEl.style.background = darkGradient;
+            } else {
+                discordCardEl.classList.remove("gradient-border");
+                discordCardEl.style.background = "";
+                if (infoEl) infoEl.style.background = "";
+            }
+
             if (liveTimers.length > 0) {
                 const intervalId = setInterval(() => {
                     liveTimers.forEach(timer => {
@@ -774,9 +814,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }, 1000);
                 window._lanyardLiveTimersIntervals.push(intervalId);
             }
-        } catch (err) {
-            renderFallbackCard("Error rendering Discord card.");
-            console.error("Discord card error:", err);
+        } catch (e) {
+            renderFallbackCard(`Error rendering Discord card.\n\n${e.stack}`);
+            return console.error("Discord card error:", e);
         }
     }
 
@@ -785,9 +825,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             const profile = await fetchDstnProfile(LANYARD_USER_ID);
             const merged = mergeProfileLanyard(profile, presence);
             await renderDiscordCard(merged);
-        } catch (err) {
-            renderFallbackCard("Error updating presence.");
-            console.error("Presence update error:", err);
+        } catch (e) {
+            renderFallbackCard(`Error updating presence.\n\n${e.stack}`);
+            return console.error("Presence update error:", e);
         }
     }
 
@@ -876,8 +916,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         connectLanyardWS();
-    } catch (err) {
-        renderFallbackCard("Could not connect to Discord status.");
-        console.error("Initial connection error:", err);
+    } catch (e) {
+        renderFallbackCard(`Could not connect to Discord status.\n\n${e.stack}`);
+        console.error("Initial connection error:", e);
     }
 });
