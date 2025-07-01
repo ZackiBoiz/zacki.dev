@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const card = document.getElementById("discord-card");
     if (!card) return;
 
-    const LANYARD_USER_ID = "155149108183695360";
+    const LANYARD_USER_ID = "900442235760443442";
     const WS_URL = "wss://api.lanyard.rest/socket";
 
     const STATUS_ICONS = {
@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return typeof flags === "number" && (flags & bit) === bit;
     }
 
-    function getFirstValidImageUrl(urls) {
+    function getFirstValidImageURL(urls) {
         return new Promise(resolve => {
             if (!urls || !urls.length) return resolve(null);
             let idx = 0;
@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function getAssetWithFallback(urls) {
-        return await getFirstValidImageUrl(urls);
+        return await getFirstValidImageURL(urls);
     }
 
     async function toURL(imgKey, id, appId, fallbackType) {
@@ -376,7 +376,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (hasFlag(flags, Number(flag))) {
                 const badge = BADGES[flag];
                 if (!badge) return "";
-                const src = await getDiscordBadgeAssetUrl(badge.key, badge.fallback);
+                const src = await getDiscordBadgeAssetURL(badge.key, badge.fallback);
                 return `<img class="discord-icon hover-action" src="${src}" alt="Badge" title="${badge.title}">`;
             }
             return "";
@@ -423,26 +423,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function getUserBannerURL(discordUser) {
         const userId = discordUser.id;
-        const dstnUrl = `https://dcdn.dstn.to/banners/${userId}?size=512`;
-        try {
-            const res = await fetch(dstnUrl, {
-                method: "GET"
-            });
-            if (res.ok) return dstnUrl;
-        } catch { }
+        const urls = [
+            `https://dcdn.dstn.to/banners/${userId}?size=512`
+        ];
         if (discordUser.banner) {
-            const discordBannerUrl = `https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}.png?size=512`;
-            try {
-                const res = await fetch(discordBannerUrl, {
-                    method: "HEAD"
-                });
-                if (res.ok) return discordBannerUrl;
-                if (res.status !== 200) {
-                    return null;
-                }
-            } catch { }
+            urls.push(`https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}.png?size=512`);
         }
-        return null;
+        return await getFirstValidImageURL(urls);
     }
 
     async function getUserAvatarURL(discordUser) {
@@ -451,6 +438,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             `https://dcdn.dstn.to/avatars/${userId}?size=512`
         ];
         if (discordUser.avatar) {
+            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}.gif?size=512`);
             urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}.png?size=512`);
         }
         if (discordUser.discriminator && !isNaN(parseInt(discordUser.discriminator)) && discordUser.discriminator !== "0") {
@@ -460,10 +448,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             urls.push(`https://cdn.discordapp.com/embed/avatars/${fallbackNum}.png?size=512`);
         }
         urls.push("assets/default/unknown.svg");
-        return await getFirstValidImageUrl(urls);
+        return await getFirstValidImageURL(urls);
     }
 
-    async function getDiscordBadgeAssetUrl(key) {
+    async function getDiscordBadgeAssetURL(key) {
         const assetId = DISCORD_BADGE_ASSETS[key];
         if (!assetId) return null;
         const url = `https://cdn.discordapp.com/badge-icons/${assetId}.png?size=512`;
@@ -743,8 +731,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (activity.emoji) {
                         if (activity.emoji.id) {
                             const ext = activity.emoji.animated ? "gif" : "png";
-                            const emojiUrl = `https://cdn.discordapp.com/emojis/${activity.emoji.id}.${ext}?size=128`;
-                            emoji = `<img class="discord-custom-emoji discord-icon hover-action" src="${emojiUrl}" alt="${escape(activity.emoji.name)}" title=":${activity.emoji.name}:">`;
+                            const emojiURL = `https://cdn.discordapp.com/emojis/${activity.emoji.id}.${ext}?size=128`;
+                            emoji = `<img class="discord-custom-emoji discord-icon hover-action" src="${emojiURL}" alt="${escape(activity.emoji.name)}" title=":${activity.emoji.name}:">`;
                         } else if (activity.emoji.name) {
                             emoji = escape(activity.emoji.name);
                         }
@@ -826,7 +814,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (spotifyData) {
                 let timeDetails = renderTimeDetails(spotifyData.timestamps, "spotify", liveTimers);
-                const albumArtUrl = spotifyData.album_art_url || "assets/default/unknown.svg";
+                const albumArtURL = spotifyData.album_art_url || "assets/default/unknown.svg";
                 const album = spotifyData.album ? escape(spotifyData.album) : "Unknown Album";
                 const artist = spotifyData.artist ? escape(spotifyData.artist) : "Unknown Artist";
                 const song = spotifyData.song ? escape(spotifyData.song) : "Unknown Song";
@@ -837,7 +825,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         </div>
                         <div class="discord-activity-card-body">
                             <div class="discord-activity-card-assets">
-                                <img class="discord-activity-card-large hover-action" src="${albumArtUrl}" title="${album}">
+                                <img class="discord-activity-card-large hover-action" src="${albumArtURL}" title="${album}">
                             </div>
                             <div class="discord-activity-card-text">
                                 <div class="discord-activity-card-title">
