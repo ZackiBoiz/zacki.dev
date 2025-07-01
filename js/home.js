@@ -486,8 +486,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         merged.profile_badges = Array.isArray(profile.badges) ? profile.badges : [];
-        if (profile.user && profile.user.primary_guild) {
-            merged.discord_user.primary_guild = profile.user.primary_guild;
+        if (lanyard.discord_user && lanyard.discord_user.primary_guild) {
+            merged.discord_user.primary_guild = lanyard.discord_user.primary_guild;
         }
 
         if (profile.legacy_username) {
@@ -498,10 +498,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         if (profile.user && profile.user.banner_color) {
             merged.discord_user.banner_color = profile.user.banner_color;
-        }
-
-        if (lanyard.discord_user && lanyard.discord_user.primary_guild) {
-            merged.discord_user.primary_guild = lanyard.discord_user.primary_guild;
         }
 
         console.log(merged);
