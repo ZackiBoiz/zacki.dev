@@ -294,7 +294,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="discord-info">
                 <div class="discord-header">
                     <span class="discord-avatar-wrapper">
-                        <img class="discord-avatar" src="assets/app-icons/default.svg" alt="Avatar">
+                        <img class="discord-avatar" src="assets/default/unknown.svg" alt="Avatar">
                         <span class="discord-status-badge">
                             <i class="fas fa-circle-dot discord-icon hover-action muted" title="Offline"></i>
                         </span>
@@ -325,9 +325,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="discord-info">
                 <div class="discord-header">
                     <span class="discord-avatar-wrapper">
-                        <img class="discord-avatar" src="assets/app-icons/default.svg" alt="Avatar">
+                        <img class="discord-avatar" src="assets/default/unknown.svg" alt="Avatar">
                         <span class="discord-status-badge">
-                            <i class="fas fa-circle-notch fa-spin discord-icon hover-action muted" title="Loading"></i>
+                            <i class="fas fa-circle-notch fa-spin discord-icon hover-action muted" title="Loading..."></i>
                         </span>
                     </span>
                     <div class="discord-names">
@@ -440,7 +440,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const fallbackNum = (BigInt(userId) >> 22n) % 6n;
             urls.push(`https://cdn.discordapp.com/embed/avatars/${fallbackNum}.png?size=512`);
         }
-        urls.push("assets/app-icons/default.svg");
+        urls.push("assets/default/unknown.svg");
         return await getFirstValidImageUrl(urls);
     }
 
@@ -470,6 +470,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function mergeProfileLanyard(profile, lanyard) {
+        console.log(lanyard);
+        console.log(profile);
         const merged = { ...lanyard };
 
         if (profile && Array.isArray(profile.badges) && profile.badges.length > 0) {
@@ -500,6 +502,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
 
+        console.log(merged);
         return merged;
     }
 
@@ -732,7 +735,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     largeImageURL = await toURL(null, null, activity.application_id, "large");
                 }
                 if (!largeImageURL) {
-                    largeImageURL = "assets/app-icons/default.svg";
+                    largeImageURL = "assets/default/unknown.svg";
                 }
 
                 let smallImageURL = await toURL(activity.assets?.small_image, null, activity.application_id);
@@ -791,7 +794,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (spotifyData) {
                 let timeDetails = renderTimeDetails(spotifyData.timestamps, "spotify", liveTimers);
-                const albumArtUrl = spotifyData.album_art_url || "assets/app-icons/default.svg";
+                const albumArtUrl = spotifyData.album_art_url || "assets/default/unknown.svg";
                 const album = spotifyData.album ? escape(spotifyData.album) : "Unknown Album";
                 const artist = spotifyData.artist ? escape(spotifyData.artist) : "Unknown Artist";
                 const song = spotifyData.song ? escape(spotifyData.song) : "Unknown Song";
