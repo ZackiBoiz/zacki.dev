@@ -470,32 +470,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function mergeProfileLanyard(profile, lanyard) {
-        console.log(lanyard);
-        console.log(profile);
-        if (!profile) return lanyard;
         const merged = { ...lanyard };
-        merged.discord_user = {
-            ...lanyard.discord_user,
-            ...profile.user
+
+        if (profile && Array.isArray(profile.badges) && profile.badges.length > 0) {
+            merged.profile_badges = profile.badges;
+        } else if (lanyard && Array.isArray(lanyard.profile_badges)) {
+            merged.profile_badges = lanyard.profile_badges;
+        }
+
+        merged.discord_user = { 
+            ...(lanyard.discord_user || {})
         };
 
-        if (profile.user_profile) {
+        if (profile && profile.user_profile) {
             merged.discord_user.profile = profile.user_profile;
         }
-
-        merged.profile_badges = Array.isArray(profile.badges) ? profile.badges : [];
-        if (lanyard.discord_user && lanyard.discord_user.primary_guild) {
-            merged.discord_user.primary_guild = lanyard.discord_user.primary_guild;
-        }
-
-        if (profile.legacy_username) {
+        if (profile && profile.legacy_username) {
             merged.discord_user.legacy_username = profile.legacy_username;
         }
-        if (profile.connected_accounts) {
+        if (profile && profile.connected_accounts) {
             merged.discord_user.connected_accounts = profile.connected_accounts;
         }
 
-        console.log(merged);
+        if (profile && profile.user) {
+            for (const key of Object.keys(profile.user)) {
+                if (!(key in merged.discord_user)) {
+                    merged.discord_user[key] = profile.user[key];
+                }
+            }
+        }
+
         return merged;
     }
 
