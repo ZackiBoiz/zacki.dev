@@ -8,22 +8,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     const STATUS_ICONS = {
         online: {
             name: "Online",
-            icon: "fa-circle",
+            asset: "assets/statuses/online.svg",
             color: "success"
         },
         idle: {
             name: "Idle",
-            icon: "fa-moon",
+            asset: "assets/statuses/idle.svg",
             color: "warning"
         },
         dnd: {
             name: "Do Not Disturb",
-            icon: "fa-minus-circle",
+            asset: "assets/statuses/dnd.svg",
             color: "danger"
         },
         offline: {
             name: "Offline",
-            icon: "fa-circle-dot",
+            asset: "assets/statuses/offline.svg",
             color: "muted"
         },
     };
@@ -658,7 +658,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             : ""
                         }
                         <span class="discord-status-badge">
-                            <i class="fas ${status.icon} discord-icon hover-action ${status.color}" title="${status.name}"></i>
+                            <img class="discord-icon hover-action ${status.color}" src="${status.asset}" title="${status.name}">
                         </span>
                     </span>
                     <div class="discord-names">
