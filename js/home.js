@@ -586,7 +586,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (bannerURL) {
                 html += `<div class="discord-banner"><img class="discord-banner-image" src="${bannerURL}" alt="User Banner"></div>`;
             } else if (userInfo.accentColor) {
-                html += `<div class="discord-banner"><div class="discord-banner-image" style="background: ${userInfo.accentColor};"></div></div>`;
+                html += `<div class="discord-banner"><div class="discord-banner-color" style="background: ${userInfo.accentColor};"></div></div>`;
             }
 
             html += `<div class="discord-info">`;
@@ -655,7 +655,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         if (activity.emoji.id) {
                             const ext = activity.emoji.animated ? "gif" : "png";
                             const emojiUrl = `https://cdn.discordapp.com/emojis/${activity.emoji.id}.${ext}?size=128`;
-                            emoji = `<img class="discord-custom-emoji" src="${emojiUrl}" alt="${escape(activity.emoji.name)}" title=":${activity.emoji.name}:">`;
+                            emoji = `<img class="discord-custom-emoji discord-icon hover-action" src="${emojiUrl}" alt="${escape(activity.emoji.name)}" title=":${activity.emoji.name}:">`;
                         } else if (activity.emoji.name) {
                             emoji = escape(activity.emoji.name);
                         }
@@ -781,17 +781,55 @@ document.addEventListener("DOMContentLoaded", async () => {
                 discordCardEl.classList.add("gradient-border");
                 discordCardEl.style.background = gradient;
 
-                function darken(hex, amt = 0.5) {
+                function isDark(hex) {
                     let c = hex.replace("#", "");
                     if (c.length === 3) c = c.split("").map(x => x + x).join("");
                     let n = parseInt(c, 16);
-                    let r = Math.max(0, Math.floor(((n >> 16) & 0xff) * (1 - amt)));
-                    let g = Math.max(0, Math.floor(((n >> 8) & 0xff) * (1 - amt)));
-                    let b = Math.max(0, Math.floor((n & 0xff) * (1 - amt)));
-                    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+                    let r = (n >> 16) & 0xff;
+                    let g = (n >> 8) & 0xff;
+                    let b = n & 0xff;
+
+                    return (0.299 * r + 0.587 * g + 0.114 * b) < 128;
                 }
-                const darkColors = colors.map(c => darken(c, 0.5));
-                const darkGradient = `linear-gradient(to bottom, ${darkColors.join(", ")})`;
+
+                function mixColor(hex, mix, alpha) {
+                    let c = hex.replace("#", "");
+                    if (c.length === 3) c = c.split("").map(x => x + x).join("");
+                    let n = parseInt(c, 16);
+                    let r = (n >> 16) & 0xff;
+                    let g = (n >> 8) & 0xff;
+                    let b = n & 0xff;
+
+                    let mixR, mixG, mixB, mixA = 1;
+                    if (mix.startsWith("#")) {
+                        let m = mix.replace("#", "");
+                        if (m.length === 3) m = m.split("").map(x => x + x).join("");
+                        let mn = parseInt(m, 16);
+                        mixR = (mn >> 16) & 0xff;
+                        mixG = (mn >> 8) & 0xff;
+                        mixB = mn & 0xff;
+                    } else if (mix.startsWith("rgba")) {
+                        let arr = mix.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*([\d\.]+)?\)/);
+                        mixR = parseInt(arr[1]);
+                        mixG = parseInt(arr[2]);
+                        mixB = parseInt(arr[3]);
+                        mixA = arr[4] !== undefined ? parseFloat(arr[4]) : 1;
+                    } else {
+                        mixR = mixG = mixB = 0;
+                    }
+
+                    let outR = Math.round((1 - alpha) * r + alpha * mixR);
+                    let outG = Math.round((1 - alpha) * g + alpha * mixG);
+                    let outB = Math.round((1 - alpha) * b + alpha * mixB);
+                    return `rgb(${outR},${outG},${outB})`;
+                }
+
+                const mixedColors = colors.map(c =>
+                    isDark(c)
+                        ? mixColor(c, "#000000", 0.6) // mix with black + alpha
+                        : mixColor(c, "#ffffff", 0.6) // mix with white + alpha
+                );
+                const darkGradient = `linear-gradient(to bottom, ${mixedColors[0]}, ${mixedColors[0]}, ${mixedColors[mixedColors.length - 1]})`;
                 if (infoEl) infoEl.style.background = darkGradient;
             } else {
                 discordCardEl.classList.remove("gradient-border");

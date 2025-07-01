@@ -205,6 +205,9 @@
 }
 
 .discord-banner .discord-banner-image {
+    height: 7vw;
+}
+.discord-banner .discord-banner-color {
     height: 5vw;
 }
 
