@@ -8,22 +8,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     const STATUS_ICONS = {
         online: {
             name: "Online",
-            icon: "fa-circle",
+            asset: "assets/statuses/online.svg",
             color: "success"
         },
         idle: {
             name: "Idle",
-            icon: "fa-moon",
+            asset: "assets/statuses/idle.svg",
             color: "warning"
         },
         dnd: {
             name: "Do Not Disturb",
-            icon: "fa-minus-circle",
+            asset: "assets/statuses/dnd.svg",
             color: "danger"
         },
         offline: {
             name: "Offline",
-            icon: "fa-circle-dot",
+            asset: "assets/statuses/offline.svg",
             color: "muted"
         },
     };
@@ -470,32 +470,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function mergeProfileLanyard(profile, lanyard) {
-        console.log(lanyard);
-        console.log(profile);
-        if (!profile) return lanyard;
         const merged = { ...lanyard };
-        merged.discord_user = {
-            ...lanyard.discord_user,
-            ...profile.user
+
+        if (profile && Array.isArray(profile.badges) && profile.badges.length > 0) {
+            merged.profile_badges = profile.badges;
+        } else if (lanyard && Array.isArray(lanyard.profile_badges)) {
+            merged.profile_badges = lanyard.profile_badges;
+        }
+
+        merged.discord_user = { 
+            ...(lanyard.discord_user || {})
         };
 
-        if (profile.user_profile) {
+        if (profile && profile.user_profile) {
             merged.discord_user.profile = profile.user_profile;
         }
-
-        merged.profile_badges = Array.isArray(profile.badges) ? profile.badges : [];
-        if (lanyard.discord_user && lanyard.discord_user.primary_guild) {
-            merged.discord_user.primary_guild = lanyard.discord_user.primary_guild;
-        }
-
-        if (profile.legacy_username) {
+        if (profile && profile.legacy_username) {
             merged.discord_user.legacy_username = profile.legacy_username;
         }
-        if (profile.connected_accounts) {
+        if (profile && profile.connected_accounts) {
             merged.discord_user.connected_accounts = profile.connected_accounts;
         }
 
-        console.log(merged);
+        if (profile && profile.user) {
+            for (const key of Object.keys(profile.user)) {
+                if (!(key in merged.discord_user)) {
+                    merged.discord_user[key] = profile.user[key];
+                }
+            }
+        }
+
         return merged;
     }
 
@@ -584,9 +588,59 @@ document.addEventListener("DOMContentLoaded", async () => {
             let html = "";
 
             if (bannerURL) {
-                html += `<div class="discord-banner"><img class="discord-banner-image" src="${bannerURL}" alt="User Banner"></div>`;
+                html += `
+                    <div class="discord-banner">
+                        <img class="discord-banner-image" src="${bannerURL}" alt="User Banner">
+                    </div>
+                `;
             } else if (userInfo.accentColor) {
-                html += `<div class="discord-banner"><div class="discord-banner-color" style="background: ${userInfo.accentColor};"></div></div>`;
+                html += `
+                    <div class="discord-banner">
+                        <div class="discord-banner-color" style="background: ${userInfo.accentColor};"></div>
+                    </div>
+                `;
+            } else {
+                if (userInfo.avatarURL) {
+                    const img = new window.Image();
+                    img.crossOrigin = "Anonymous";
+                    img.src = userInfo.avatarURL;
+                    await new Promise(resolve => {
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                    });
+
+                    let avgColor = null;
+                    try {
+                        const canvas = document.createElement("canvas");
+                        canvas.width = img.naturalWidth || img.width;
+                        canvas.height = img.naturalHeight || img.height;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                        let r = 0, g = 0, b = 0, count = 0;
+                        for (let i = 0; i < data.length; i += 4) {
+                            if (data[i + 3] < 128) continue;
+                            r += data[i];
+                            g += data[i + 1];
+                            b += data[i + 2];
+                            count++;
+                        }
+                        if (count > 0) {
+                            r = Math.round(r / count);
+                            g = Math.round(g / count);
+                            b = Math.round(b / count);
+                            avgColor = `rgb(${r}, ${g}, ${b})`;
+                        }
+                    } catch(e) { }
+
+                    if (avgColor) {
+                        html += `
+                            <div class="discord-banner">
+                                <div class="discord-banner-color" style="background: ${avgColor};"></div>
+                            </div>
+                        `;
+                    }
+                }
             }
 
             html += `<div class="discord-info">`;
@@ -604,7 +658,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             : ""
                         }
                         <span class="discord-status-badge">
-                            <i class="fas ${status.icon} discord-icon hover-action ${status.color}" title="${status.name}"></i>
+                            <img class="discord-icon hover-action ${status.color}" src="${status.asset}" title="${status.name}">
                         </span>
                     </span>
                     <div class="discord-names">

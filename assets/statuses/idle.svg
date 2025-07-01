@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="12" height="12"
+    viewBox="0 0 12 12"
+>
+  <defs>
+    <!--
+      Define the mask in normalized (objectBoundingBox) coordinates.
+      White = show, black = hide.
+    -->
+    <mask
+      id="svg-mask-status-idle"
+      maskUnits="objectBoundingBox"
+      maskContentUnits="objectBoundingBox"
+      x="0" y="0" width="1" height="1"
+    >
+      <!-- Full disc -->
+      <circle fill="white" cx="0.5" cy="0.5" r="0.5"/>
+      <!-- Cutout disc -->
+      <circle fill="black" cx="0.25" cy="0.25" r="0.375"/>
+    </mask>
+  </defs>
+
+  <!--
+    A rectangle the size of the viewport, colored rgb(202,150,84),
+    with the mask applied.
+  -->
+  <rect
+    x="0" y="0" width="12" height="12"
+    fill="rgb(202,150,84)"
+    mask="url(#svg-mask-status-idle)"
+  />
+</svg>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="12" height="12"
+  viewBox="0 0 12 12"
+>
+  <defs>
+    <mask
+      id="svg-mask-status-offline"
+      maskUnits="objectBoundingBox"
+      maskContentUnits="objectBoundingBox"
+      x="0" y="0" width="1" height="1"
+    >
+      <circle fill="white" cx="0.5" cy="0.5" r="0.5"/>
+      <circle fill="black" cx="0.5" cy="0.5" r="0.25"/>
+    </mask>
+  </defs>
+
+  <rect
+    x="0" y="0"
+    width="12" height="12"
+    fill="rgb(130,131,139)"
+    mask="url(#svg-mask-status-offline)"
+  />
+</svg>

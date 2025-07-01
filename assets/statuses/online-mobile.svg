@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="12" height="18"
+  viewBox="0 0 12 18"
+  aria-hidden="true"
+>
+  <defs>
+    <mask
+      id="svg-mask-status-online-mobile"
+      maskUnits="objectBoundingBox"
+      maskContentUnits="objectBoundingBox"
+      viewBox="0 0 1 1"
+    >
+      <rect
+        fill="white"
+        x="0" y="0"
+        width="1" height="1"
+        rx="0.1875" ry="0.125"
+      />
+      <rect
+        fill="black"
+        x="0.125"
+        y="0.1666666667"
+        width="0.75"
+        height="0.5"
+      />
+      <ellipse
+        fill="black"
+        cx="0.5"
+        cy="0.8333333333"
+        rx="0.125"
+        ry="0.0833333333"
+      />
+    </mask>
+  </defs>
+
+  <rect
+    x="0" y="0"
+    width="12" height="18"
+    rx="2" ry="2"
+    fill="#43A25A"
+    mask="url(#svg-mask-status-online-mobile)"
+  />
+</svg>
