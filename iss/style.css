@@ -1,0 +1,55 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+#globeViz {
+    width: 100vw;
+    height: 100vh;
+}
+
+#statusIndicator {
+    position: absolute;
+    top: 2vw;
+    left: 2vw;
+    width: 2vw;
+    height: 2vw;
+    border-radius: 50%;
+    background-color: orange;
+    color: orange;
+    z-index: 10;
+    border: 0.125vw solid #fff;
+    overflow: visible;
+}
+
+#statusIndicator::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: currentColor;
+    opacity: 0.4;
+    animation: ripple 1.5s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.4;
+    }
+
+    70% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+}
