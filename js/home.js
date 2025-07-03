@@ -427,7 +427,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             `https://dcdn.dstn.to/banners/${userId}?size=512`
         ];
         if (discordUser.banner) {
-            urls.push(`https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}.png?size=512`);
+            urls.push(`https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}?size=512`);
         }
         return await getFirstValidImageURL(urls);
     }
@@ -438,8 +438,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             `https://dcdn.dstn.to/avatars/${userId}?size=512`
         ];
         if (discordUser.avatar) {
-            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}.gif?size=512`);
-            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}.png?size=512`);
+            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}?size=512`);
         }
         if (discordUser.discriminator && !isNaN(parseInt(discordUser.discriminator)) && discordUser.discriminator !== "0") {
             urls.push(`https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png?size=512`);
