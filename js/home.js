@@ -591,15 +591,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                     : null
             };
 
-            let guildLookupInvite = null;
+            let guildLookup = null;
             if (userInfo.guild?.guildId) {
                 try {
                     const res = await fetch(`https://discordlookup.mesalytic.moe/v1/guild/${userInfo.guild.guildId}`);
                     if (res.ok) {
                         const info = await res.json();
-                        if (info.instant_invite) {
-                            guildLookupInvite = info.instant_invite;
-                        }
+                        guildLookup = info;
                     }
                 } catch (err) {
                     console.warn("Guild lookup failed:", err);
@@ -713,20 +711,25 @@ document.addEventListener("DOMContentLoaded", async () => {
                             ${userInfo.username}${userInfo.discriminator ? `#${userInfo.discriminator}` : ""}
                         </span>
                     </div>
-                    ${userInfo.guild?.tagURL ? `${guildLookupInvite ? `
-                                <a href="${escape(guildLookupInvite)}" target="_blank" rel="noopener noreferrer">
-                                    <span class="discord-guild-tag hover-action" title="${userInfo.guild.tag} tag">
-                                        <img src="${userInfo.guild.tagURL}" alt="Guild tag">
-                                        ${userInfo.guild.tag}
-                                    </span>
-                                </a>
-                            ` : `
-                                <span class="discord-guild-tag hover-action" title="${userInfo.guild.tag} tag">
+                    ${userInfo.guild?.tagURL
+                        ? (() => {
+                            const titleText = guildLookup?.name
+                                ? `(${escape(guildLookup.name)}) ${userInfo.guild.tag} tag`
+                                : `${userInfo.guild.tag} tag`;
+
+                            const spanHtml = `
+                                <span class="discord-guild-tag hover-action" title="${titleText}">
                                     <img src="${userInfo.guild.tagURL}" alt="Guild tag">
                                     ${userInfo.guild.tag}
                                 </span>
-                            `
-                        }` : ""
+                            `;
+
+                            if (guildLookup?.instant_invite) {
+                                return `<a href="${escape(guildLookup.instant_invite)}" target="_blank" rel="noopener noreferrer" >${spanHtml}</a>`;
+                            }
+
+                            return spanHtml;
+                        })() : ""
                     }
                 </div>
             `;
