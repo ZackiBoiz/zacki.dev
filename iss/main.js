@@ -1,88 +1,175 @@
-import { scaleSequentialSqrt } from "https://esm.sh/d3-scale";
-import { interpolateYlOrRd } from "https://esm.sh/d3-scale-chromatic";
+import * as satellite from "https://cdn.jsdelivr.net/npm/satellite.js@4.0.0/dist/satellite.es.js";
 
-const weightColor = scaleSequentialSqrt(interpolateYlOrRd).domain([0, 1e7]);
+const BASE_URL = "https://api.wheretheiss.at";
+const ISS_NORAD_ID = 25544;
+const MAX_SAVED_POINTS = 1000;
+const PREDICTED_POINTS = 5000;
+const SATELLITE_DATA_INTERVAL = 2000;
+const TLE_DATA_INTERVAL = 60000;
+
 const globeContainer = document.getElementById("globeViz");
 const statusIndicator = document.getElementById("statusIndicator");
+
 
 const world = new Globe(globeContainer)
     .globeImageUrl("//cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg")
     .bumpImageUrl("//cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png")
     .backgroundImageUrl("//cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png")
-    .hexBinPointWeight("pop")
-    .hexAltitude(d => d.sumWeight * 6e-8)
-    .hexBinResolution(4)
-    .hexTopColor(d => weightColor(d.sumWeight))
-    .hexSideColor(d => weightColor(d.sumWeight))
-    .hexBinMerge(true)
     .enablePointerInteraction(false)
     .pointsData([])
-    .pointLat("lat")
-    .pointLng("lng")
-    .pointAltitude(p => p.alt / 10000)
-    .pointColor(p => {
-        const idx = p.i - offset;
-        if (idx === futureTrail.length - 1) return "rgb(0, 255, 0)";
-        const t = idx / (futureTrail.length - 1);
+    .pointLat(d => d.lat)
+    .pointLng(d => d.lng)
+    .pointAltitude(d => d.type === "predicted" ? 0.001 : d.alt / 10000)
+    .pointColor(d => {
+        if (d.type === "predicted") return "cyan";
+
+        const len = realTrail.length;
+        const idx = realTrail.indexOf(d);
+        if (idx === len - 1) return "limegreen";
+        const t = idx / (len - 1);
         const r = Math.round(t * 255), b = Math.round((1 - t) * 255);
-        return `rgb(${r}, 0, ${b})`;
+        return `rgb(${r},0,${b})`;
     })
-    .pointRadius(() => 0.1);
+    .pointRadius(d => d.type === "predicted" ? 0.05 : 0.075);
 
-let futureTrail = [];
-let offset = 0;
-let gotFirstPing = false;
+let realTrail = [];
+let predictedTrail = [];
+let tleData = null;
+let satrec = null;
+let nextPredTime = null;
 
-function setStatusIndicator(colorName) {
-    statusIndicator.style.backgroundColor = colorName;
-    statusIndicator.style.color = colorName;
+setInterval(getTLEData, TLE_DATA_INTERVAL);
+setInterval(getSatelliteData, SATELLITE_DATA_INTERVAL);
+getSatelliteData();
+setStatus("red");
+
+
+
+function setStatus(color) {
+    statusIndicator.style.color = color;
+    statusIndicator.style.backgroundColor = color;
 }
 
-async function fetchISSPosition() {
+function updateGlobe(realTrail, predictedTrail) {
+    world.pointsData([...realTrail, ...predictedTrail]);
+}
+
+async function getTLEData() {
+    const data = await getSatelliteTLE(ISS_NORAD_ID);
+    if (!data) return setStatus("red");
+
+    tleData = data;
+    computePredicted(data.line1, data.line2, PREDICTED_POINTS);
+    setStatus("orange");
+}
+
+async function getSatelliteData() {
+    if (!tleData) {
+        await getTLEData();
+        if (!tleData) return;
+    }
+
+    const data = await getSatellitePosition(ISS_NORAD_ID);
+    if (!data) {
+        predictedTrail.shift();
+        updateGlobe(realTrail, predictedTrail);
+        return setStatus("red");
+    }
+    
+    setStatus("limegreen");
+    appendRealPosition(data);
+    stepPrediction();
+}
+
+function computePredicted(l1, l2, N) {
+    satrec = satellite.twoline2satrec(l1, l2);
+
+    const now = new Date();
+    const STEP_S = SATELLITE_DATA_INTERVAL / 1000;
+
+    predictedTrail = [];
+    for (let i = 1; i <= N; i++) {
+        const t = new Date(now.getTime() + i * STEP_S * 1000);
+        const eci = satellite.propagate(satrec, t);
+        if (!eci.position) continue;
+        const gmst = satellite.gstime(t);
+        const geo = satellite.eciToGeodetic(eci.position, gmst);
+        predictedTrail.push({
+            type: "predicted",
+            lat: satellite.degreesLat(geo.latitude),
+            lng: satellite.degreesLong(geo.longitude),
+            alt: geo.height
+        });
+    }
+
+    nextPredTime = new Date(now.getTime() + (N + 1) * STEP_S * 1000);
+    updateGlobe(realTrail, predictedTrail);
+}
+
+function stepPrediction() {
+    if (!satrec || !nextPredTime) return;
+
+    predictedTrail.shift();
+
+    const eci = satellite.propagate(satrec, nextPredTime);
+    if (eci.position) {
+        const gmst = satellite.gstime(nextPredTime);
+        const geo = satellite.eciToGeodetic(eci.position, gmst);
+        predictedTrail.push({
+            type: "predicted",
+            lat: satellite.degreesLat(geo.latitude),
+            lng: satellite.degreesLong(geo.longitude),
+            alt: geo.height
+        });
+    }
+
+    nextPredTime = new Date(nextPredTime.getTime() + 2 * 1000);
+    updateGlobe(realTrail, predictedTrail);
+}
+
+function appendRealPosition(pos) {
+    realTrail.push({
+        type: "real",
+        lat: pos.latitude,
+        lng: pos.longitude,
+        alt: pos.altitude
+    });
+    if (realTrail.length > MAX_SAVED_POINTS) realTrail.shift();
+    updateGlobe(realTrail, predictedTrail);
+}
+
+async function getSatellites() {
     try {
-        const res = await fetch("https://api.wheretheiss.at/v1/satellites/25544");
-        const data = await res.json();
-
-        return {
-            lat: data.latitude,
-            lng: data.longitude,
-            alt: data.altitude,
-            vel: data.velocity,
-            timestamp: data.timestamp
-        };
-    } catch (err) {
-        console.error("Failed to fetch ISS data:", err);
-        return null;
-    }
+        const res = await fetch(`${BASE_URL}/v1/satellites`);
+        if (!res.ok) return;
+        return await res.json();
+    } catch(e) {}
 }
-
-async function generateFuturePoints() {
-    const pos = await fetchISSPosition();
-    if (!pos) return setStatusIndicator("orange");
-
-    if (!gotFirstPing) {
-        gotFirstPing = true;
-        setStatusIndicator("limegreen");
-    }
-
-    const point = {
-        i: offset + futureTrail.length,
-        lat: pos.lat,
-        lng: pos.lng,
-        alt: pos.alt,
-        vel: pos.vel
-    };
-
-    futureTrail.push(point);
-
-    if (futureTrail.length > 1000) {
-        futureTrail.shift();
-        offset++;
-    }
-
-    world.pointsData([...futureTrail]);
+async function getSatellitePosition(id) {
+    try {
+        const res = await fetch(`${BASE_URL}/v1/satellites/${id}`);
+        if (!res.ok) return;
+        return await res.json();
+    } catch(e) {}
 }
-
-setStatusIndicator("orange");
-generateFuturePoints();
-setInterval(generateFuturePoints, 2000);
+async function getSatellitePositions(id, timestamps) {
+    try {
+        const res = await fetch(`${BASE_URL}/v1/satellites/${id}/positions?timestamps=${timestamps.join(",")}`);
+        if (!res.ok) return;
+        return await res.json();
+    } catch(e) {}
+}
+async function getSatelliteTLE(id, timestamps) {
+    try {
+        const res = await fetch(`${BASE_URL}/v1/satellites/${id}/tles`);
+        if (!res.ok) return;
+        return await res.json();
+    } catch(e) {}
+}
+async function getCoordinateData(lat, lng) {
+    try {
+        const res = await fetch(`${BASE_URL}/v1/coordinates/${lat},${lng}`);
+        if (!res.ok) return;
+        return await res.json();
+    } catch(e) {}
+}

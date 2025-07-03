@@ -15,8 +15,8 @@ body {
     width: 2vw;
     height: 2vw;
     border-radius: 50%;
-    background-color: orange;
-    color: orange;
+    background-color: red;
+    color: red;
     z-index: 10;
     border: 0.125vw solid #fff;
     overflow: visible;
