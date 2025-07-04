@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Live ISS Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css?v=1.0.2">
+</head>
+
+<body>
+    <div id="globeViz"></div>
+    <div id="controls">
+        <div>
+            API status: <span id="status" style="background: red;"></span>
+        </div>
+        <label><input type="checkbox" id="togglePast" checked> Show Past Trail</label>
+        <label><input type="checkbox" id="toggleFuture" checked> Show Future Trail</label>
+        <label>Zoom (altitude):<br /><input type="range" id="zoom" min="0.2" max="5" step="0.1" value="2"></label>
+        <button id="resetView">Reset View</button>
+
+        <div id="info">
+            <div><span class="label">Cursor:</span><span id="cursor">–</span></div>
+            <div><span class="label">Lat:</span><span id="lat">–</span></div>
+            <div><span class="label">Lng:</span><span id="lng">–</span></div>
+            <div><span class="label">Alt:</span><span id="alt">–</span> km</div>
+            <div><span class="label">Vel:</span><span id="vel">–</span> km/h</div>
+            <div><span class="label">Footprint:</span><span id="fp">–</span> km</div>
+            <div><span class="label">Vis:</span><span id="vis">–</span></div>
+            <div><span class="label">Time:</span><span id="ts">–</span></div>
+        </div>
+
+        <canvas id="altChart" width="200" height="80"></canvas>
+    </div>
+    <script src="https://unpkg.com/globe.gl"></script>
+    <script src="https://cdn.jsdelivr.net/npm/satellite.js@6.0.0/dist/satellite.min.js"></script>
+    <script src="main.js?v=1.0.2"></script>
+</body>
+
+</html>

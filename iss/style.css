@@ -1,0 +1,85 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+}
+
+#globeViz {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 12px;
+    border-radius: 8px;
+    font-family: sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    z-index: 1;
+    max-width: 240px;
+}
+
+#controls label {
+    display: block;
+    margin: 6px 0;
+    cursor: pointer;
+}
+
+#status {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    border-radius: 50%;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+#info {
+    margin-top: 8px;
+}
+
+#info div {
+    margin: 4px 0;
+}
+
+#info span.label {
+    display: inline-block;
+    width: 80px;
+    color: #aaa;
+}
+
+#altChart {
+    display: block;
+    margin-top: 8px;
+    background: #111;
+    border: 1px solid #333;
+}
+
+input[type=range] {
+    width: 100%;
+}
+
+button {
+    margin-top: 8px;
+    padding: 4px 8px;
+    background: #222;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #333;
+}
