@@ -271,18 +271,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!imgKey) {
             if (fallbackType === "large" && appId) {
                 urls = [
-                    `https://dcdn.dstn.to/app-icons/${appId}?size=512`,
-                    `https://cdn.discordapp.com/app-icons/${appId}.png?size=512`
+                    `https://dcdn.dstn.to/app-icons/${appId}?size=512&t=${Date.now()}`,
+                    `https://cdn.discordapp.com/app-icons/${appId}.png?size=512&t=${Date.now()}`
                 ];
             }
         } else if (typeof imgKey === "string") {
             if (imgKey.startsWith("mp:external/")) {
                 const match = imgKey.match(/mp:external\/([^/]+\/https?\/.+)/);
                 if (match) {
-                    urls = [`https://media.discordapp.net/external/${match[1]}?size=512`];
+                    urls = [`https://media.discordapp.net/external/${match[1]}?size=512&t=${Date.now()}`];
                 }
             } else if (/^\d+$/.test(imgKey) && appId) {
-                urls = [`https://cdn.discordapp.com/app-assets/${appId}/${imgKey}.png?size=512`];
+                urls = [`https://cdn.discordapp.com/app-assets/${appId}/${imgKey}.png?size=512&t=${Date.now()}`];
             }
         }
         if (!urls.length) return null;
@@ -424,10 +424,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function getUserBannerURL(discordUser) {
         const userId = discordUser.id;
         const urls = [
-            `https://dcdn.dstn.to/banners/${userId}?size=512`
+            `https://dcdn.dstn.to/banners/${userId}?size=512&t=${Date.now()}`
         ];
         if (discordUser.banner) {
-            urls.push(`https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}?size=512`);
+            urls.push(`https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}?size=512&t=${Date.now()}`);
         }
         return await getFirstValidImageURL(urls);
     }
@@ -435,16 +435,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function getUserAvatarURL(discordUser) {
         const userId = discordUser.id;
         const urls = [
-            `https://dcdn.dstn.to/avatars/${userId}?size=512`
+            `https://dcdn.dstn.to/avatars/${userId}?size=512&t=${Date.now()}`
         ];
         if (discordUser.avatar) {
-            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}?size=512`);
+            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}?size=512&t=${Date.now()}`);
         }
         if (discordUser.discriminator && !isNaN(parseInt(discordUser.discriminator)) && discordUser.discriminator !== "0") {
-            urls.push(`https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png?size=512`);
+            urls.push(`https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png?size=512&t=${Date.now()}`);
         } else if (!discordUser.avatar && userId) {
             const fallbackNum = (BigInt(userId) >> 22n) % 6n;
-            urls.push(`https://cdn.discordapp.com/embed/avatars/${fallbackNum}.png?size=512`);
+            urls.push(`https://cdn.discordapp.com/embed/avatars/${fallbackNum}.png?size=512&t=${Date.now()}`);
         }
         urls.push("assets/default/unknown.svg");
         return await getFirstValidImageURL(urls);
@@ -453,7 +453,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function getDiscordBadgeAssetURL(key) {
         const assetId = DISCORD_BADGE_ASSETS[key];
         if (!assetId) return null;
-        const url = `https://cdn.discordapp.com/badge-icons/${assetId}.png?size=512`;
+        const url = `https://cdn.discordapp.com/badge-icons/${assetId}.png?size=512&t=${Date.now()}`;
 
         return new Promise(resolve => {
             const img = new Image();
@@ -516,7 +516,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!Array.isArray(badges) || badges.length === 0) return "";
         return badges.map(badge => {
             const src = badge.icon
-                ? `https://cdn.discordapp.com/badge-icons/${badge.icon}.png?size=512`
+                ? `https://cdn.discordapp.com/badge-icons/${badge.icon}.png?size=512&t=${Date.now()}`
                 : "assets/badges/unknown.svg";
             const title = badge.description || badge.id || "";
             const link = badge.link || null;
@@ -558,7 +558,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const userInfo = {
                 avatarURL,
                 avatarDecorationURL: discordUser.avatar_decoration_data?.asset
-                    ? `https://cdn.discordapp.com/avatar-decoration-presets/${discordUser.avatar_decoration_data.asset}.png?size=128`
+                    ? `https://cdn.discordapp.com/avatar-decoration-presets/${discordUser.avatar_decoration_data.asset}.png?size=128&t=${Date.now()}`
                     : null,
                 nameplateAsset: discordUser.collectibles?.nameplate?.asset || null,
                 username: escape(discordUser.username || "Unknown"),
@@ -584,7 +584,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ? {
                         tag: escape(discordUser.primary_guild.tag),
                         tagURL: discordUser.primary_guild.identity_guild_id && discordUser.primary_guild.badge
-                            ? `https://cdn.discordapp.com/clan-badges/${discordUser.primary_guild.identity_guild_id}/${discordUser.primary_guild.badge}.png?size=64`
+                            ? `https://cdn.discordapp.com/clan-badges/${discordUser.primary_guild.identity_guild_id}/${discordUser.primary_guild.badge}.png?size=64&t=${Date.now()}`
                             : "",
                         guildId: discordUser.primary_guild.identity_guild_id
                     }
@@ -762,7 +762,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (activity.emoji) {
                         if (activity.emoji.id) {
                             const ext = activity.emoji.animated ? "gif" : "png";
-                            const emojiURL = `https://cdn.discordapp.com/emojis/${activity.emoji.id}.${ext}?size=128`;
+                            const emojiURL = `https://cdn.discordapp.com/emojis/${activity.emoji.id}.${ext}?size=128&t=${Date.now()}`;
                             emoji = `<img class="discord-custom-emoji discord-icon hover-action" src="${emojiURL}" alt="${escape(activity.emoji.name)}" title=":${activity.emoji.name}:">`;
                         } else if (activity.emoji.name) {
                             emoji = escape(activity.emoji.name);
