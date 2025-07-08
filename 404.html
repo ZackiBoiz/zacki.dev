@@ -10,6 +10,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <script>
+        const redirects = [
+            { test: "/fscdn/", target: "/fscdn/" },
+        ];
+
+        const p = window.location.pathname;
+        for (const { test, target } of redirects) {
+            let isMatch = false;
+
+            if (typeof test === "string") {
+                if (p.startsWith(test) && p !== test) {
+                    isMatch = true;
+                }
+            }
+            else if (typeof test === "function") {
+                isMatch = test(p) === true;
+            }
+
+            if (isMatch) {
+                window.location.replace(target);
+                return;
+            }
+        }
+    </script>
+    <script>
         const html = document.documentElement;
         function getPreferredTheme() {
             const stored = localStorage.getItem("theme");
