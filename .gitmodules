@@ -1,0 +1,3 @@
+[submodule "muse"]
+	path = muse
+	url = https://github.com/ZackiBoiz/muse.git
