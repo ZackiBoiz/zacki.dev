@@ -13,7 +13,6 @@ const toggleFuture = document.getElementById("toggleFuture");
 const speedEl = document.getElementById("speed");
 const zoomEl = document.getElementById("zoom");
 const resetView = document.getElementById("resetView");
-const cursorEl = document.getElementById("cursor");
 const latEl = document.getElementById("lat");
 const lngEl = document.getElementById("lng");
 const altEl = document.getElementById("alt");
@@ -31,9 +30,9 @@ let futureTrail = [];
 let altHistory = [];
 
 const globe = window.Globe()(globeViz)
-    .globeImageUrl("//unpkg.com/three-globe/example/img/earth-night.jpg")
-    .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png")
-    .backgroundImageUrl("//unpkg.com/three-globe/example/img/night-sky.png")
+    .globeImageUrl("assets/globe.jpg")
+    .bumpImageUrl("assets/bump.png")
+    .backgroundImageUrl("assets/background.png")
     .showAtmosphere(true).atmosphereColor("lightskyblue").atmosphereAltitude(0.2)
     .pointOfView({
         lat: 0,
@@ -49,6 +48,29 @@ const globe = window.Globe()(globeViz)
     .pathDashGap(d => d.type === "future" ? 0.1 : 0).pathDashInitialGap(0)
     .pathDashAnimateTime(d => d.type === "future" ? 2000 : 0)
     .pathTransitionDuration(0).pathResolution(2);
+
+fetchTLE();
+setInterval(fetchTLE, TLE_INTERVAL);
+fetchCurrent();
+setInterval(fetchCurrent, UPDATE_INTERVAL);
+
+togglePast.addEventListener("change", updateGlobe);
+toggleFuture.addEventListener("change", updateGlobe);
+zoomEl.addEventListener("input", () => {
+    const pov = globe.pointOfView();
+    globe.pointOfView({
+        lat: pov.lat,
+        lng: pov.lng,
+        altitude: parseFloat(zoomEl.value)
+    }, 0);
+});
+resetView.addEventListener("click", () => {
+    globe.pointOfView({
+        lat: 0,
+        lng: 0,
+        altitude: parseFloat(zoomEl.value)
+    }, 1000);
+});
 
 function setStatus(color) {
     statusEl.style.background = color;
@@ -184,27 +206,3 @@ function drawAltChart() {
     altCtx.lineWidth = 1.5;
     altCtx.stroke();
 }
-
-
-fetchTLE();
-setInterval(fetchTLE, TLE_INTERVAL);
-fetchCurrent();
-setInterval(fetchCurrent, UPDATE_INTERVAL);
-
-togglePast.addEventListener("change", updateGlobe);
-toggleFuture.addEventListener("change", updateGlobe);
-zoomEl.addEventListener("input", () => {
-    const pov = globe.pointOfView();
-    globe.pointOfView({
-        lat: pov.lat,
-        lng: pov.lng,
-        altitude: parseFloat(zoomEl.value)
-    }, 0);
-});
-resetView.addEventListener("click", () => {
-    globe.pointOfView({
-        lat: 0,
-        lng: 0,
-        altitude: parseFloat(zoomEl.value)
-    }, 1000);
-});
