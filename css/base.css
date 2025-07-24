@@ -159,6 +159,11 @@ footer {
     }
 }
 
+.navbar {
+    display: flex;
+    justify-content: center;
+}
+
 .navbar ul {
     display: flex;
     gap: 1.2vw;
@@ -240,7 +245,7 @@ a.link:hover {
 .icons {
     margin: 1vw 0 1vw 0;
     display: flex;
-    gap: 1vw; 
+    gap: 1vw;
 }
 
 .icons i {
@@ -263,18 +268,23 @@ a.link:hover {
 .success {
     color: var(--success);
 }
+
 .warning {
     color: var(--warning);
 }
+
 .danger {
     color: var(--danger);
 }
+
 .info {
     color: var(--info);
 }
+
 .blurple {
     color: var(--blurple);
 }
+
 .muted {
     color: var(--text-muted);
 }
@@ -290,6 +300,7 @@ a.link:hover {
     border: 0.125vw solid var(--border);
     transition: box-shadow 0.2s, transform 0.2s, background 0.2s, color 0.2s;
 }
+
 .card:hover {
     box-shadow: 0 0.25vw 1vw rgba(0, 0, 0, 0.14);
 }
@@ -297,6 +308,7 @@ a.link:hover {
 .scale {
     transition: transform 0.2s;
 }
+
 .scale:hover {
     transform: scale(1.02);
 }
