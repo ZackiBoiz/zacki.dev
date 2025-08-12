@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const LANYARD_USER_ID = "900442235760443442";
     const WS_URL = "wss://api.lanyard.rest/socket";
+    const assetCache = new Map();
 
     const STATUS_ICONS = {
         online: {
@@ -219,6 +220,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         [ACTIVITY_TYPES.COMPETING]: "🏆 Competing in"
     };
 
+    const PREMIUM_TYPES = {
+        NONE: 0,
+        CLASSIC: 1,
+        NITRO: 2,
+        BASIC: 3,
+    }
+
     const LANYARD_OPS = {
         EVENT: 0,
         HELLO: 1,
@@ -245,6 +253,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         return typeof flags === "number" && (flags & bit) === bit;
     }
 
+    function getCachedAsset(key) {
+        if (!key) return null;
+        if (!assetCache.has(key)) return null;
+        return assetCache.get(key);
+    }
+
+    function setCachedAsset(key, value) {
+        if (!key) return;
+        assetCache.set(key, value === undefined ? null : value);
+    }
+
+    async function getAssetWithFallbackCached(key, urls) {
+        const cached = getCachedAsset(key);
+        if (cached !== null && cached !== undefined) return cached;
+
+        const resolved = await getFirstValidImageURL(urls);
+        setCachedAsset(key, resolved);
+        return resolved;
+    }
+
     function getFirstValidImageURL(urls) {
         return new Promise(resolve => {
             if (!urls || !urls.length) return resolve(null);
@@ -266,27 +294,38 @@ document.addEventListener("DOMContentLoaded", async () => {
         return await getFirstValidImageURL(urls);
     }
 
-    async function toURL(imgKey, id, appId, fallbackType) {
+    async function toURL(imgKey, appId, fallbackType) {
+        const normKey = imgKey || "";
+        const cacheKey = `appasset:${appId || "none"}:${normKey || "null"}:${fallbackType || "none"}`;
+
+        const cached = getCachedAsset(cacheKey);
+        if (cached) return cached;
+
         let urls = [];
         if (!imgKey) {
             if (fallbackType === "large" && appId) {
-                urls = [
-                    `https://dcdn.dstn.to/app-icons/${appId}?size=512&t=${Date.now()}`,
-                    `https://cdn.discordapp.com/app-icons/${appId}.png?size=512&t=${Date.now()}`
-                ];
+                urls.push(`https://dcdn.dstn.to/app-icons/${appId}?size=512`);
+                urls.push(`https://cdn.discordapp.com/app-icons/${appId}.png?size=512`);
             }
         } else if (typeof imgKey === "string") {
             if (imgKey.startsWith("mp:external/")) {
-                const match = imgKey.match(/mp:external\/([^/]+\/https?\/.+)/);
+                console.log(imgKey);
+                const match = imgKey.match(/mp:external\/(.+\/https?\/.+)/);
                 if (match) {
-                    urls = [`https://media.discordapp.net/external/${match[1]}?size=512&t=${Date.now()}`];
+                    urls.push(`https://media.discordapp.net/external/${match[1]}?size=512`);
                 }
             } else if (/^\d+$/.test(imgKey) && appId) {
-                urls = [`https://cdn.discordapp.com/app-assets/${appId}/${imgKey}.png?size=512&t=${Date.now()}`];
+                urls.push(`https://cdn.discordapp.com/app-assets/${appId}/${imgKey}.png?size=512`);
             }
         }
-        if (!urls.length) return null;
-        return await getAssetWithFallback(urls);
+
+        if (!urls.length) {
+            setCachedAsset(cacheKey, null);
+            return null;
+        }
+
+        const resolved = await getAssetWithFallbackCached(cacheKey, urls);
+        return resolved;
     }
 
     function formatDuration(ms) {
@@ -423,44 +462,71 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function getUserBannerURL(discordUser) {
         const userId = discordUser.id;
-        const urls = [
-            `https://dcdn.dstn.to/banners/${userId}?size=512&t=${Date.now()}`
-        ];
+        const bannerHash = discordUser.banner || "";
+        const cacheKey = `banner:${userId}:${bannerHash}`;
+
+        const cached = getCachedAsset(cacheKey);
+        if (cached) return cached;
+
+        const urls = [];
+        urls.push(`https://dcdn.dstn.to/banners/${userId}?size=512`);
         if (discordUser.banner) {
-            urls.push(`https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}?size=512&t=${Date.now()}`);
+            urls.push(`https://cdn.discordapp.com/banners/${userId}/${discordUser.banner}?size=512`);
         }
-        return await getFirstValidImageURL(urls);
+        const resolved = await getAssetWithFallbackCached(cacheKey, urls);
+        return resolved;
     }
 
     async function getUserAvatarURL(discordUser) {
         const userId = discordUser.id;
-        const urls = [
-            `https://dcdn.dstn.to/avatars/${userId}?size=512&t=${Date.now()}`
-        ];
+        const avatarHash = discordUser.avatar || "";
+
+        const disc = discordUser.discriminator && !isNaN(parseInt(discordUser.discriminator)) ? discordUser.discriminator : "";
+        const fallbackNum = (!discordUser.avatar && userId)
+            ? String((BigInt(userId) >> 22n) % 6n)
+            : "";
+        const cacheKey = `avatar:${userId}:${avatarHash}:${disc}:${fallbackNum}`;
+
+        const cached = getCachedAsset(cacheKey);
+        if (cached) return cached;
+
+        const urls = [];
+
+        urls.push(`https://dcdn.dstn.to/avatars/${userId}?size=512`);
         if (discordUser.avatar) {
-            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}?size=512&t=${Date.now()}`);
+            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}.png?size=512`);
         }
         if (discordUser.discriminator && !isNaN(parseInt(discordUser.discriminator)) && discordUser.discriminator !== "0") {
-            urls.push(`https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png?size=512&t=${Date.now()}`);
+            urls.push(`https://cdn.discordapp.com/embed/avatars/${parseInt(discordUser.discriminator) % 5}.png?size=512`);
         } else if (!discordUser.avatar && userId) {
-            const fallbackNum = (BigInt(userId) >> 22n) % 6n;
-            urls.push(`https://cdn.discordapp.com/embed/avatars/${fallbackNum}.png?size=512&t=${Date.now()}`);
+            urls.push(`https://cdn.discordapp.com/embed/avatars/${fallbackNum}.png?size=512`);
         }
         urls.push("assets/default/unknown.svg");
-        return await getFirstValidImageURL(urls);
+
+        const resolved = await getAssetWithFallbackCached(cacheKey, urls);
+        return resolved;
     }
 
     async function getDiscordBadgeAssetURL(key) {
+        if (!key) return null;
         const assetId = DISCORD_BADGE_ASSETS[key];
         if (!assetId) return null;
-        const url = `https://cdn.discordapp.com/badge-icons/${assetId}.png?size=512&t=${Date.now()}`;
 
-        return new Promise(resolve => {
+        const cacheKey = `badge:${assetId}`;
+        const cached = getCachedAsset(cacheKey);
+        if (cached) return cached;
+
+        const url = `https://cdn.discordapp.com/badge-icons/${assetId}.png?size=512`;
+
+        const resolved = await new Promise(resolve => {
             const img = new Image();
             img.onload = () => resolve(url);
             img.onerror = () => resolve(null);
             img.src = url;
         });
+
+        setCachedAsset(cacheKey, resolved);
+        return resolved;
     }
 
     async function fetchDstnProfile(userId) {
@@ -498,6 +564,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         if (profile && profile.connected_accounts) {
             merged.discord_user.connected_accounts = profile.connected_accounts;
+        }
+        if (profile && profile.premium_guild_since) {
+            merged.premium_guild_since = profile.premium_guild_since;
+        }
+        if (profile && profile.premium_since) {
+            merged.premium_since = profile.premium_since;
+        }
+        if (profile && profile.premium_type) {
+            merged.premium_type = profile.premium_type;
         }
 
         if (profile && profile.user) {
@@ -558,7 +633,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const userInfo = {
                 avatarURL,
                 avatarDecorationURL: discordUser.avatar_decoration_data?.asset
-                    ? `https://cdn.discordapp.com/avatar-decoration-presets/${discordUser.avatar_decoration_data.asset}.png?size=128&t=${Date.now()}`
+                    ? `https://cdn.discordapp.com/avatar-decoration-presets/${discordUser.avatar_decoration_data.asset}.png?size=128&t=${Date.now()}&passthrough=true`
                     : null,
                 nameplateAsset: discordUser.collectibles?.nameplate?.asset || null,
                 username: escape(discordUser.username || "Unknown"),
@@ -570,7 +645,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     verified_bot: discordUser.bot && hasFlag(discordUser.public_flags, DISCORD_USER_FLAGS.VERIFIED_BOT),
                     system: discordUser.system
                 },
-                bio: discordUser.bio || "",
                 accentColor: discordUser.profile?.banner_color
                     ? discordUser.profile.banner_color
                     : discordUser.profile?.accent_color
@@ -578,7 +652,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                             ? `#${discordUser.profile.accent_color.toString(16).padStart(6, "0")}`
                             : discordUser.profile.accent_color)
                         : null,
-                pronouns: discordUser.pronouns || "",
+                bio: discordUser.profile?.bio || discordUser.bio || "",
+                pronouns: discordUser.profile?.pronouns || discordUser.pronouns || "",
                 legacyUsername: discordUser.legacy_username || "",
                 guild: discordUser.primary_guild?.tag
                     ? {
@@ -699,16 +774,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </span>
                     <div class="discord-names">
                         <span class="discord-global">
-                            ${userInfo.globalName}
+                            ${escape(userInfo.globalName)}
                             <span class="discord-icons">${renderFlairs(userInfo.flairs, USER_FLAIRS)}</span>
-                            <span class="discord-icons">${
-                                await (lanyardData.profile_badges?.length
-                                    ? renderProfileBadges(lanyardData.profile_badges)
-                                    : renderBadges(userInfo.publicFlags, USER_BADGES))
+                            <span class="discord-icons">${await (lanyardData.profile_badges?.length
+                                ? renderProfileBadges(lanyardData.profile_badges)
+                                : renderBadges(userInfo.publicFlags, USER_BADGES))
                             }</span>
                         </span>
                         <span class="discord-username">
-                            ${userInfo.username}${userInfo.discriminator ? `#${userInfo.discriminator}` : ""}
+                            ${escape(userInfo.username) + 
+                                (userInfo.discriminator ? `#${userInfo.discriminator}` : "") + 
+                                (userInfo.pronouns ? ` • ${escape(userInfo.pronouns)}` : "")
+                            }
                         </span>
                     </div>
                     ${userInfo.guild?.tagURL
@@ -734,14 +811,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 </div>
             `;
 
-            // Remove bio/pronouns/original name display
-            // if (userInfo.bio || userInfo.pronouns) {
-            //     html += `
-            //         <div class="discord-profile-extra">
-            //             ${userInfo.bio ? `<div class="discord-profile-bio">${escape(userInfo.bio)}</div>` : ""}
-            //             ${userInfo.pronouns ? `<div class="discord-profile-pronouns">${escape(userInfo.pronouns)}</div>` : ""}
-            //         </div>
-            //     `;
+            // if (userInfo.bio) {
+            //     html += `<div class="discord-profile-bio-text">${escape(userInfo.bio)}</div>`;
             // }
 
             let liveTimers = [];
@@ -781,15 +852,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                     continue;
                 }
 
-                let largeImageURL = await toURL(activity.assets?.large_image, null, activity.application_id, "large");
+                let largeImageURL = await toURL(activity.assets?.large_image, activity.application_id, "large");
                 if (!largeImageURL && activity.application_id) {
-                    largeImageURL = await toURL(null, null, activity.application_id, "large");
+                    largeImageURL = await toURL(null, activity.application_id, "large");
                 }
                 if (!largeImageURL) {
                     largeImageURL = "assets/default/unknown.svg";
                 }
 
-                let smallImageURL = await toURL(activity.assets?.small_image, null, activity.application_id);
+                let smallImageURL = await toURL(activity.assets?.small_image, activity.application_id);
                 const activityLabel = ACTIVITY_LABELS[activity.type] || escape(activity.name || "");
                 const activityDetails = activity.details ? escape(activity.details) : "";
                 const activityMeta = activity.state ? escape(activity.state) : "";
