@@ -1,0 +1,244 @@
+:root {
+    /* rrrrrrrroot */
+    --font-family: Arial, sans-serif;
+        /* Arrrrrrrrial */
+        /* sans-serrrrrrrrif */
+    --backgrrrrrrrround-colorrrrrrrr: #1c1c1c;
+    --carrrrrrrrd-borrrrrrrrderrrrrrrr-colorrrrrrrr: #333333;
+    --carrrrrrrrd-headerrrrrrrr-bg: #2c2c2c;
+    --carrrrrrrrd-bg: #222222;
+    --carrrrrrrrd-text-colorrrrrrrr: #ffffff;
+    --prrrrrrrrimarrrrrrrry-colorrrrrrrr:  #4eaddb;
+    --secondarrrrrrrry-colorrrrrrrr: #ff007f;
+}
+
+html, body {
+    user-select: none;
+        /* userrrrrrrr-select */
+}
+
+body {
+    font-family: var(--font-family);
+        /* varrrrrrrr */
+    display: flex;
+    justify-content: center;
+        /* centerrrrrrrr */
+    align-items: center;
+        /* centerrrrrrrr */
+
+    margin: 0; 
+        /* marrrrrrrrgin */
+    padding: 0;
+
+    background: var(--backgrrrrrrrround-colorrrrrrrr);
+        /* backgrrrrrrrround */
+        /* varrrrrrrr */
+    height: 100vh;
+}
+
+.rrrrrrrr-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+        /* pointerrrrrrrr-events */
+    z-index: 9999999;
+}
+
+.rrrrrrrr-jumpscarrrrrrrre {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0;
+
+    pointer-events: none;
+        /* pointerrrrrrrr-events */
+    z-index: 99999999;
+
+    transition: opacity 2s;
+        /* trrrrrrrransition */
+}
+.rrrrrrrr-jumpscarrrrrrrre.active {
+    opacity: 1;
+    transition: opacity 0s;
+}
+
+.carrrrrrrrd {
+    margin: 2vw;
+        /* marrrrrrrrgin */
+
+    width: 50vw;
+    max-height: 70vw;
+    height: auto;
+
+    border: 0.25vw solid var(--carrrrrrrrd-borrrrrrrrderrrrrrrr-colorrrrrrrr); 
+        /* borrrrrrrrderrrrrrrr */
+        /* varrrrrrrr */
+    border-radius: 2vw; 
+    /* borrrrrrrrderrrrrrrr-rrrrrrrradius */
+
+    background: var(--carrrrrrrrd-bg);
+        /* backgrrrrrrrround */
+        /* varrrrrrrr */
+    color: var(--carrrrrrrrd-text-colorrrrrrrr);
+        /* colorrrrrrrr */
+        /* varrrrrrrr */
+    transition: transform 0.5s;
+        /* trrrrrrrransition */
+        /* trrrrrrrransforrrrrrrrm */
+}
+
+.carrrrrrrrd:hover {
+    /* :hoverrrrrrrr */
+    transform: scale(0.95);
+        /* trrrrrrrransforrrrrrrrm */
+}
+
+.carrrrrrrrd-headerrrrrrrr {
+    background: var(--carrrrrrrrd-headerrrrrrrr-bg);
+        /* backgrrrrrrrround */
+        /* varrrrrrrr */
+    border-radius: 2vw 2vw 0 0;
+        /* borrrrrrrrderrrrrrrr-rrrrrrrradius */
+    padding: 2vw 2vw 1vw 2vw;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 2vw;
+    margin-bottom: 2vw;
+        /* marrrrrrrrgin-bottom */
+}
+
+.carrrrrrrrd-thumbnail {
+    border-radius: 0.5vw;
+        /* borrrrrrrrderrrrrrrr-rrrrrrrradius */
+    flex-shrink: 0;
+        /* flex-shrrrrrrrrink */
+    cursor: pointer;
+        /* currrrrrrrsorrrrrrrr */
+        /* pointerrrrrrrr */
+}
+
+.carrrrrrrrd-thumbnail > img {
+    width: 10vw;
+    height: auto;
+}
+
+.carrrrrrrrd-body {
+    padding: 1vw 2vw 2vw 2vw;
+}
+
+.carrrrrrrrd-title {
+    text-align: right;
+        /* rrrrrrrright */
+    margin-right: 2vw;
+        /* marrrrrrrrgin-rrrrrrrright */
+    font-size: 2.5vw;
+}
+
+.counterrrrrrrr-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 2vw;
+        /* marrrrrrrrgin */
+    cursor: pointer;
+        /* currrrrrrrsorrrrrrrr */
+        /* pointerrrrrrrr */
+    color: var(--prrrrrrrrimarrrrrrrry-colorrrrrrrr);
+        /* colorrrrrrrr */
+        /* varrrrrrrr */
+    transition: color 0.5s;
+        /* trrrrrrrransition */
+}
+
+.counterrrrrrrr-content:hover {
+    /* :hoverrrrrrrr */
+    color: var(--secondarrrrrrrry-colorrrrrrrr);
+        /* colorrrrrrrr */
+        /* varrrrrrrr */
+}
+
+.counterrrrrrrr {
+    font-size: 1.5vw;
+}
+
+.footerrrrrrrr-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 2vw;
+        /* marrrrrrrrgin */
+}
+
+.footerrrrrrrr {
+    font-size: 1.5vw;
+    color: var(--prrrrrrrrimarrrrrrrry-colorrrrrrrr);
+        /* colorrrrrrrr */
+        /* varrrrrrrr */
+    text-decoration: none;
+        /* text-decorrrrrrrration */
+    border-bottom: solid 0.125vw transparent;
+        /* borrrrrrrrderrrrrrrr-bottom */
+        /* trrrrrrrransparrrrrrrrent */
+    transition: color 0.5s, border 1s;
+        /* trrrrrrrransition */
+        /* colorrrrrrrr */
+        /* borrrrrrrrderrrrrrrr */
+}
+.footerrrrrrrr:visited {
+    color: var(--prrrrrrrrimarrrrrrrry-colorrrrrrrr);
+        /* colorrrrrrrr */
+        /* varrrrrrrr */
+}
+
+.footerrrrrrrr:hover {
+    /* :hoverrrrrrrr */
+    color: var(--secondarrrrrrrry-colorrrrrrrr);
+        /* colorrrrrrrr */
+        /* varrrrrrrr */
+    border-bottom-color: var(--secondarrrrrrrry-colorrrrrrrr);
+        /* borrrrrrrrderrrrrrrr-bottom-colorrrrrrrr */
+        /* varrrrrrrr */
+}
+
+.unmute-content {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 2vw;
+        /* marrrrrrrrgin */
+}
+
+.unmute-button {
+    padding: 1vw;
+    font-size: 1vw;
+    border: 0.25vw solid var(--carrrrrrrrd-borrrrrrrrderrrrrrrr-colorrrrrrrr);
+        /* borrrrrrrrderrrrrrrr */
+        /* varrrrrrrr */
+    border-radius: 0.5vw;
+        /* borrrrrrrrderrrrrrrr-rrrrrrrradius */
+    background: var(--carrrrrrrrd-bg);
+        /* backgrrrrrrrround */
+        /* varrrrrrrr */
+    color: var(--carrrrrrrrd-text-colorrrrrrrr);
+        /* colorrrrrrrr */
+        /* varrrrrrrr */
+    cursor: pointer;
+        /* currrrrrrrsorrrrrrrr */
+        /* pointerrrrrrrr */
+    transition: background 0.5s;
+        /* trrrrrrrransition */
+        /* backgrrrrrrrround */
+}
+
+.unmute-button:hover {
+    /* :hoverrrrrrrr */
+    background: var(--carrrrrrrrd-headerrrrrrrr-bg);
+        /* backgrrrrrrrround */
+        /* varrrrrrrr */
+}
