@@ -1,18 +1,23 @@
 .notfound-card {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    max-width: 25rem;
+    width: min(92%, 25rem);
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 40vh;
-    margin: 6vw auto 0 auto;
-    max-width: 32vw;
-    text-align: center;
 }
 
 .notfound-icon {
-    font-size: 4vw;
+    font-size: 3.5rem;
     color: var(--danger);
-    margin-bottom: 1vw;
+    margin-bottom: 0.75rem;
     animation: shake 1.2s cubic-bezier(.36, .07, .19, .97) both infinite;
 }
 
@@ -45,20 +50,20 @@
 }
 
 .notfound-card h1 {
-    font-size: 4vw;
-    margin: 0.5vw 0 0.2vw 0;
+    font-size: 3.5rem;
+    margin: 0.175rem 0 0.175rem 0;
     color: var(--danger);
     font-weight: bold;
-    letter-spacing: 0.2vw;
+    letter-spacing: 0.175rem;
 }
 
 .notfound-card h2 {
-    font-size: 2vw;
-    margin: 0.2vw 0 1vw 0;
+    font-size: 1.75rem;
+    margin: 0.175rem 0 0.75rem 0;
     color: var(--text-muted);
 }
 
 .notfound-card p {
-    font-size: 1.2vw;
+    font-size: 1rem;
     color: var(--text-muted);
 }

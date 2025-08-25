@@ -1,22 +1,22 @@
 .projects-section {
     background: var(--bg-alt);
-    border-radius: 1vw;
-    box-shadow: 0 0.25vw 1vw rgba(0, 0, 0, 0.10);
-    padding: 2vw 2.5vw;
-    margin-bottom: 1.5vw;
+    border-radius: 0.85rem;
+    box-shadow: 0 0.2rem 0.85rem rgba(0, 0, 0, 0.10);
+    padding: 1.75rem 2.15rem;
+    margin-bottom: 1.25rem;
     color: var(--text);
-    font-size: 1.2vw;
-    border: 0.125vw solid var(--border);
+    font-size: 1rem;
+    border: 0.1rem solid var(--border);
     transition: box-shadow 0.2s, transform 0.2s, background 0.2s, color 0.2s;
 }
 
 .avatar {
-    width: 6vw;
-    height: 6vw;
-    margin-bottom: 1.2vw;
+    width: 5rem;
+    height: 5rem;
+    margin-bottom: 1rem;
     border-radius: 50%;
-    border: 0.15vw solid var(--primary);
-    box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.07);
+    border: 0.125rem solid var(--primary);
+    box-shadow: 0 0.075rem 0.35rem rgba(0, 0, 0, 0.07);
 }
 
 .intro-card .title {
@@ -25,51 +25,51 @@
 }
 
 .intro-card h1 {
-    margin: 0.25vw 0 0.125vw 0;
-    font-size: 2vw;
+    margin: 0.4rem 0 0.2rem 0;
+    font-size: 1.75rem;
 }
 
 .intro-card .title h1 {
-    margin: 0.25vw 0 0.125vw 0;
-    font-size: 2.25vw;
+    margin: 0.4rem 0 0.2rem 0;
+    font-size: 2rem;
     color: var(--primary);
-    margin-left: 1vw;
+    margin-left: 0.85rem;
 }
 
 .projects-section h2 {
-    margin: 0 0 0.5vw 0;
-    font-size: 1.7vw;
+    margin: 0 0 0.85rem 0;
+    font-size: 1.5rem;
 }
 
 .private-projects-note {
     color: var(--text-muted);
-    font-size: 1vw;
-    margin-top: 0.5vw;
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
 }
 
 .projects-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.5vw;
-    margin-bottom: 1.5vw;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
     justify-content: flex-start;
     align-items: stretch;
 }
 
 .project-card {
     box-sizing: border-box;
-    flex: 0 0 25vw;
-    border-radius: 1vw;
-    padding: 1.2vw 1vw 1vw;
-    border: 0.25vw solid transparent;
+    flex: 0 0 20rem;
+    border-radius: 0.85rem;
+    padding: 1rem 0.85rem 0.85rem;
+    border: 0.2rem solid transparent;
     background:
         linear-gradient(var(--bg), var(--bg)) padding-box,
         conic-gradient(from var(--angle), var(--primary), var(--primary-alt), var(--primary)) border-box;
     background-clip: padding-box, border-box;
     animation: border-spin 2s linear infinite;
     box-shadow:
-        0 0.2vw 1vw 0 rgba(var(--primary-rgb), 0.10),
-        0 0.5vw 2vw 0 rgba(var(--primary-alt-rgb), 0.10);
+        0 0.175rem 0.85rem 0 rgba(var(--primary-rgb), 0.10),
+        0 0.4rem 1.75rem 0 rgba(var(--primary-alt-rgb), 0.10);
     transition: box-shadow 0.2s, transform 0.2s, background 0.2s, color 0.2s;
     display: flex;
     flex-direction: column;
@@ -79,26 +79,26 @@
 
 .project-card:hover {
     box-shadow:
-        0 0.4vw 2vw 0 rgba(var(--primary-rgb), 0.18),
-        0 1vw 3vw 0 rgba(var(--primary-alt-rgb), 0.18);
-    transform: translateY(-0.25vw) scale(1.02);
+        0 0.35rem 1.75rem 0 rgba(var(--primary-rgb), 0.18),
+        0 0.85rem 2.5rem 0 rgba(var(--primary-alt-rgb), 0.18);
+    transform: translateY(-0.2rem) scale(1.02);
 }
 
 .project-card h3 {
-    margin: 0 0 0.25vw 0;
-    font-size: 1.25vw;
+    margin: 0 0 0.2rem 0;
+    font-size: 1rem;
 }
 
 .project-card p {
-    margin: 0 0 0.5vw 0;
+    margin: 0 0 0.4rem 0;
     color: var(--text);
-    font-size: 1.15vw;
+    font-size: 1rem;
     flex: 1;
 }
 
 .project-links {
     display: flex;
-    gap: 0.5vw;
+    gap: 0.4rem;
     margin-top: auto;
 }
 
@@ -110,19 +110,19 @@
     background: var(--primary);
     color: var(--text);
     border: none;
-    border-radius: 0.4vw;
+    border-radius: 0.35rem;
     padding: 0.4em 1em;
-    font-size: 1vw;
+    font-size: 0.85rem;
     text-decoration: none;
     transition: background 0.2s, box-shadow 0.18s, color 0.2s;
-    box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0.085rem 0.35rem rgba(0, 0, 0, 0.05);
 }
 
 .project-btn:hover,
 .activity-btn:hover {
     background: var(--primary-alt);
     text-decoration: none;
-    box-shadow: 0 0.2vw 0.75vw rgba(0, 0, 0, 0.10);
+    box-shadow: 0 0.175rem 0.5rem rgba(0, 0, 0, 0.10);
 }
 
 .activity-btn {
@@ -139,7 +139,7 @@
     flex-direction: row;
     align-items: stretch;
     justify-content: space-between;
-    gap: 2vw;
+    gap: 1.75rem;
 }
 
 .intro-info {
@@ -149,13 +149,13 @@
 
 .discord-card {
     flex: 0 1 auto;
-    min-width: 25vw;
-    max-width: 35vw;
+    min-width: 18rem;
+    max-width: 35rem;
     width: auto;
     background: var(--bg);
-    border-radius: 0.75vw;
-    box-shadow: 0 0.15vw 0.5vw rgba(0, 0, 0, 0.08);
-    border: 0.25vw solid var(--border);
+    border-radius: 0.75rem;
+    box-shadow: 0 0.125rem 0.4rem rgba(0, 0, 0, 0.08);
+    border: 0.2rem solid var(--border);
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -167,15 +167,15 @@
 
 .gradient-border {
     border: none !important;
-    padding: 0.25vw;
+    padding: 0.2rem;
     background-clip: border-box;
-    border-radius: 0.75vw;
+    border-radius: 0.75rem;
     background-origin: border-box;
     position: relative;
 }
 
 .gradient-border>.discord-info {
-    border-radius: 0 0 0.5vw 0.5vw;
+    border-radius: 0 0 0.4rem 0.4rem;
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -184,10 +184,10 @@
 }
 
 .discord-info {
-    padding: 1vw 1.2vw;
+    padding: 0.85rem 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.75vw;
+    gap: 0.6rem;
     box-sizing: border-box;
 }
 
@@ -196,7 +196,7 @@
     width: 100%;
     margin: 0;
     padding: 0;
-    border-radius: 0.45vw 0.45vw 0 0;
+    border-radius: 0.35rem 0.35rem 0 0;
     background: none;
     display: block;
     object-fit: cover;
@@ -205,19 +205,19 @@
 }
 
 .discord-banner .discord-banner-image {
-    height: 7vw;
+    height: 6rem;
 }
 
 .discord-banner .discord-banner-color {
-    height: 5vw;
+    height: 4rem;
 }
 
 .discord-header {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 0.75vw;
-    min-height: 3.5vw;
+    gap: 0.6rem;
+    min-height: 3rem;
     z-index: 0;
 }
 
@@ -231,7 +231,7 @@
     margin: 0;
     object-fit: cover;
     z-index: 0;
-    border-radius: 0.5vw;
+    border-radius: 0.4rem;
     pointer-events: none;
     background: transparent;
     flex-shrink: 0;
@@ -249,8 +249,8 @@
 }
 
 .discord-avatar {
-    width: 3vw;
-    height: 3vw;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
     object-fit: cover;
     display: block;
@@ -261,8 +261,8 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 3.5vw;
-    height: 3.5vw;
+    width: 3rem;
+    height: 3rem;
     transform: translate(-50%, -50%);
     pointer-events: none;
     z-index: 2;
@@ -275,7 +275,7 @@
 }
 
 .discord-global {
-    font-size: 1.1vw;
+    font-size: 1rem;
     font-weight: bold;
     color: var(--primary);
     line-height: 1.1;
@@ -286,56 +286,56 @@
 .discord-icons {
     display: inline-flex;
     align-items: center;
-    margin-left: 0.3vw;
-    gap: 0 0.2vw;
+    margin-left: 0.25rem;
+    gap: 0 0.175rem;
 }
 
 .discord-icon {
-    height: 1.5vw;
+    height: 1.25rem;
     object-fit: contain;
     vertical-align: middle;
 }
 
 .discord-icon-flair {
-    height: 1vw;
+    height: 0.85rem;
     object-fit: contain;
     vertical-align: middle;
 }
 
 .discord-username {
-    font-size: 1vw;
-    color: var(--text-muted);
+    font-size: 0.85rem;
     line-height: 1.1;
+    color: var(--text-muted);
 }
 
 .discord-guild-tag {
     display: inline-block;
     background: var(--bg-alt);
     color: var(--text);
-    border: 0.125vw solid var(--border);
-    border-radius: 0.5vw;
-    font-size: 0.75vw;
+    border: 0.1rem solid var(--border);
+    border-radius: 0.4rem;
+    font-size: 0.6rem;
     font-weight: 600;
-    padding: 0.2vw 0.4vw;
-    margin-right: 0.5vw;
+    padding: 0.175rem 0.35rem;
+    margin-right: 0.4rem;
     vertical-align: middle;
     z-index: 1;
 }
 
 .discord-guild-tag img {
-    width: 1vw;
+    width: 0.85rem;
     object-fit: cover;
     vertical-align: middle;
 }
 
 .discord-status-badge {
     position: absolute;
-    right: -0.1vw;
-    bottom: -0.1vw;
+    right: 0;
+    bottom: 0;
     background: var(--bg);
     border-radius: 50%;
-    min-width: 1vw;
-    min-height: 1vw;
+    min-width: 0.85rem;
+    min-height: 0.85rem;
     width: auto;
     height: auto;
     display: flex;
@@ -347,7 +347,7 @@
 }
 
 .discord-status-badge.online-mobile {
-    padding: 0.15vw 0.05vw 0.15vw 0.05vw;
+    padding: 0.125rem 0.05rem 0.125rem 0.05rem;
     border-radius: 25%;
 }
 
@@ -355,32 +355,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 0.7vw;
-    min-height: 1vw;
+    width: 0.6rem;
+    min-height: 0.85rem;
     height: auto;
-    font-size: 0.5vw;
+    font-size: 0.4rem;
     margin: 0;
     line-height: 1;
 }
 
 .discord-activity-card {
     background: var(--bg-alt);
-    border: 0.2vw solid var(--border);
-    box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.06);
-    border-radius: 0.5vw;
+    border: 0.175rem solid var(--border);
+    box-shadow: 0 0.085rem 0.35rem rgba(0, 0, 0, 0.06);
+    border-radius: 0.4rem;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    margin-top: 0.75vw;
-    font-size: 1vw;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
 }
 
 .discord-activity-card .discord-activity-card-header {
     display: flex;
     align-items: center;
-    gap: 0.5vw;
+    gap: 0.4rem;
     background: var(--primary);
-    padding: 0.5vw 0.75vw;
+    padding: 0.4rem 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: bold;
@@ -390,8 +390,8 @@
 .discord-activity-card .discord-activity-card-body {
     display: flex;
     align-items: center;
-    gap: 0.75vw;
-    padding: 0.75vw;
+    gap: 0.6rem;
+    padding: 0.6rem;
 }
 
 .discord-activity-card-assets {
@@ -400,53 +400,53 @@
 }
 
 .discord-activity-card-assets .discord-activity-card-large {
-    width: 3vw;
-    height: 3vw;
-    border-radius: 0.4vw;
-    border: 0.15vw solid var(--border);
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.35rem;
+    border: 0.125rem solid var(--border);
     background: var(--bg-alt);
     object-fit: cover;
 }
 
 .discord-activity-card-assets .discord-activity-card-small {
     position: absolute;
-    bottom: -0.4vw;
-    right: -0.4vw;
-    width: 1.25vw;
-    height: 1.25vw;
+    bottom: -0.35rem;
+    right: -0.35rem;
+    width: 1rem;
+    height: 1rem;
     border-radius: 50%;
-    border: 0.1vw solid var(--border);
+    border: 0.085rem solid var(--border);
     background: var(--bg-alt);
-    box-shadow: 0 0.05vw 0.2vw rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.05rem 0.175rem rgba(0, 0, 0, 0.1);
     object-fit: cover;
 }
 
 .discord-activity-card-text {
     display: flex;
     flex-direction: column;
-    gap: 0.3vw;
+    gap: 0.25rem;
 }
 
 .discord-activity-card-title {
-    font-size: 1vw;
+    font-size: 0.85rem;
     font-weight: bold;
     color: var(--text);
 }
 
 .discord-activity-card-details {
-    font-size: 0.9vw;
+    font-size: 0.75rem;
     color: var(--text-muted);
 }
 
 .discord-activity-card-meta,
 .discord-activity-card-time {
-    font-size: 0.75vw;
+    font-size: 0.6rem;
     color: var(--text-muted);
 }
 
 .discord-activity-card-time {
     color: var(--success);
-    margin-top: 0.1vw;
+    margin-top: 0.075rem;
     font-weight: bold;
 }
 
@@ -458,4 +458,73 @@
 .hover-action:hover {
     filter: brightness(0.9) contrast(1.1);
     cursor: pointer;
+}
+
+@media (max-width: 1200px) {
+    .project-card {
+        flex: 0 0 48%;
+    }
+}
+
+@media (max-width: 900px) {
+    .project-card {
+        flex: 0 0 100%;
+        padding: 1rem;
+        border-radius: 0.8rem;
+    }
+
+    .intro-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .intro-info {
+        width: 100%;
+    }
+
+    .discord-card {
+        min-width: auto;
+        max-width: 100%;
+        width: 100%;
+        border-radius: 0.75rem;
+        margin: 0 auto;
+    }
+
+    .discord-banner .discord-banner-image {
+        height: clamp(48px, 6rem, 80px);
+    }
+
+    .discord-avatar {
+        width: clamp(40px, 3.25rem, 56px);
+        height: clamp(40px, 3.25rem, 56px);
+    }
+}
+
+@media (max-width: 480px) {
+    .discord-activity-card {
+        font-size: 13px;
+        padding: 0.5rem;
+    }
+
+    .discord-activity-card .discord-activity-card-header {
+        padding: 0.4rem 0.5rem;
+    }
+
+    .discord-activity-card-assets .discord-activity-card-large {
+        width: 56px;
+        height: 56px;
+    }
+
+    .discord-activity-card-assets .discord-activity-card-small {
+        width: 32px;
+        height: 32px;
+        bottom: -6px;
+        right: -6px;
+    }
+}
+
+@media (max-width: 600px) {
+    .project-card {
+        animation: none;
+    }
 }
