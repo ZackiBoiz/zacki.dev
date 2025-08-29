@@ -197,7 +197,7 @@ footer {
     padding: 0.125rem 0.5rem;
     border-radius: 0.35rem;
     transition: background 0.2s, color 0.2s;
-    font-size: 1rem;
+    font-size: 0.85rem;
 }
 
 .navbar a:hover {

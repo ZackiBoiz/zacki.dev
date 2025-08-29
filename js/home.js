@@ -354,7 +354,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <span class="discord-avatar-wrapper">
                         <img class="discord-avatar" src="assets/default/unknown.svg" alt="Avatar">
                         <span class="discord-status-badge">
-                            <i class="fas fa-circle-dot discord-icon hover-action muted" title="Offline"></i>
+                            <img class="discord-icon hover-action" src="${STATUS_ICONS.offline.asset}" title="${STATUS_ICONS.offline.name}">
                         </span>
                     </span>
                     <div class="discord-names">
@@ -385,7 +385,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <span class="discord-avatar-wrapper">
                         <img class="discord-avatar" src="assets/default/unknown.svg" alt="Avatar">
                         <span class="discord-status-badge">
-                            <i class="fas fa-circle-notch fa-spin discord-icon hover-action muted" title="Loading..."></i>
+                            <img class="discord-icon hover-action" src="${STATUS_ICONS.offline.asset}" title="${STATUS_ICONS.offline.name}">
                         </span>
                     </span>
                     <div class="discord-names">
