@@ -220,7 +220,7 @@ footer {
     transition: background 0.2s, color 0.2s;
     margin-left: auto;
     flex-shrink: 0;
-    box-shadow: 0 0.075rem 0.35rem rgba(0, 0, 0, 0.04);
+    box-shadow: 0.05rem 0.2rem 0.35rem rgba(0, 0, 0, 0.15)
 }
 
 .theme-toggle i {
