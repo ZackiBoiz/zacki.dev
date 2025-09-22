@@ -636,9 +636,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ? `https://cdn.discordapp.com/avatar-decoration-presets/${discordUser.avatar_decoration_data.asset}.png?size=128&t=${Date.now()}&passthrough=true`
                     : null,
                 nameplateAsset: discordUser.collectibles?.nameplate?.asset || null,
-                username: escape(discordUser.username || "Unknown"),
+                username: discordUser.username || "Unknown",
                 discriminator: discordUser.discriminator === "0" ? null : discordUser.discriminator,
-                globalName: escape(discordUser.global_name || discordUser.username || "Unknown"),
+                globalName: discordUser.global_name || discordUser.username || "Unknown",
                 publicFlags: discordUser.public_flags,
                 flairs: {
                     bot: discordUser.bot && !hasFlag(discordUser.public_flags, DISCORD_USER_FLAGS.VERIFIED_BOT),
@@ -657,7 +657,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 legacyUsername: discordUser.legacy_username || "",
                 guild: discordUser.primary_guild?.tag
                     ? {
-                        tag: escape(discordUser.primary_guild.tag),
+                        tag: discordUser.primary_guild.tag,
                         tagURL: discordUser.primary_guild.identity_guild_id && discordUser.primary_guild.badge
                             ? `https://cdn.discordapp.com/clan-badges/${discordUser.primary_guild.identity_guild_id}/${discordUser.primary_guild.badge}.png?size=64&t=${Date.now()}`
                             : "",
@@ -667,7 +667,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             };
 
             let guildLookup = null;
-            if (userInfo.guild?.guildId) {
+            // mesalytic.moe is too janky
+            /*if (userInfo.guild?.guildId) {
                 try {
                     const res = await fetch(`https://discordlookup.mesalytic.moe/v1/guild/${userInfo.guild.guildId}`);
                     if (res.ok) {
@@ -677,7 +678,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 } catch (err) {
                     console.warn("Guild lookup failed:", err);
                 }
-            }
+            }*/
 
 
             const status = STATUS_ICONS[discordStatus];
@@ -782,9 +783,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                             }</span>
                         </span>
                         <span class="discord-username">
-                            ${escape(userInfo.username) + 
+                            ${escape(userInfo.username + 
                                 (userInfo.discriminator ? `#${userInfo.discriminator}` : "") + 
-                                (userInfo.pronouns ? ` • ${escape(userInfo.pronouns)}` : "")
+                                (userInfo.pronouns ? ` • ${userInfo.pronouns}` : ""))
                             }
                         </span>
                     </div>
