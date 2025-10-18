@@ -331,6 +331,31 @@ a.link:hover {
     transform: scale(1.02);
 }
 
+.email-captcha-wrapper {
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    flex-wrap: wrap;
+}
+
+.email-captcha-img {
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 100%;
+    height: auto;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+@media (max-width:480px) {
+    .email-captcha-img {
+        max-width: 240px;
+    }
+
+    .email-obf {
+        font-size: 13px;
+    }
+}
+
 /* https://codepen.io/learyjk/pen/oNKQpYW */
 @property --angle {
     syntax: "<angle>";
