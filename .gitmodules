@@ -1,3 +1,6 @@
 [submodule "muse"]
 	path = muse
 	url = https://github.com/ZackiBoiz/muse.git
+[submodule "polygrams"]
+	path = polygrams
+	url = https://github.com/ZackiBoiz/Polygram-Generator.git
