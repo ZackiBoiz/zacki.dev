@@ -498,6 +498,11 @@
         width: clamp(40px, 3.25rem, 56px);
         height: clamp(40px, 3.25rem, 56px);
     }
+    
+    .discord-avatar-decoration {
+        width: clamp(40px, 4rem, 56px);
+        height: clamp(40px, 4rem, 56px);
+    }
 }
 
 @media (max-width: 480px) {

@@ -494,6 +494,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         urls.push(`https://dcdn.dstn.to/avatars/${userId}?size=512`);
         if (discordUser.avatar) {
+            urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}.gif?size=512`);
             urls.push(`https://cdn.discordapp.com/avatars/${userId}/${discordUser.avatar}.png?size=512`);
         }
         if (discordUser.discriminator && !isNaN(parseInt(discordUser.discriminator)) && discordUser.discriminator !== "0") {
@@ -592,7 +593,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return badges.map(badge => {
             const src = badge.icon
                 ? `https://cdn.discordapp.com/badge-icons/${badge.icon}.png?size=512&t=${Date.now()}`
-                : "assets/badges/unknown.svg";
+                : "assets/default/unknown.svg";
             const title = badge.description || badge.id || "";
             const link = badge.link || null;
             const imgTag = `<img class="discord-icon hover-action" src="${src}" alt="Badge" title="${title}">`;
