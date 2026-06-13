@@ -543,43 +543,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function mergeProfileLanyard(profile, lanyard) {
-        console.log(lanyard);
         console.log(profile);
+        console.log(lanyard);
         const merged = { ...lanyard };
 
-        if (profile && Array.isArray(profile.badges) && profile.badges.length > 0) {
+        if (Array.isArray(profile?.badges) && profile.badges.length > 0) {
             merged.profile_badges = profile.badges;
-        } else if (lanyard && Array.isArray(lanyard.profile_badges)) {
+        } else if (Array.isArray(lanyard?.profile_badges)) {
             merged.profile_badges = lanyard.profile_badges;
         }
 
         merged.discord_user = {
-            ...(lanyard.discord_user || {})
+            ...lanyard.discord_user,
+            ...profile?.user_profile ? {
+                profile: profile.user_profile
+            } : {},
+            ...profile?.legacy_username ? {
+                legacy_username: profile.legacy_username
+            } : {},
+            ...profile?.connected_accounts ? {
+                connected_accounts: profile.connected_accounts
+            } : {},
+            ...profile?.widgets ? {
+                widgets: profile.widgets
+            } : {}
         };
 
-        if (profile && profile.user_profile) {
-            merged.discord_user.profile = profile.user_profile;
-        }
-        if (profile && profile.legacy_username) {
-            merged.discord_user.legacy_username = profile.legacy_username;
-        }
-        if (profile && profile.connected_accounts) {
-            merged.discord_user.connected_accounts = profile.connected_accounts;
-        }
-        if (profile && profile.premium_guild_since) {
-            merged.premium_guild_since = profile.premium_guild_since;
-        }
-        if (profile && profile.premium_since) {
-            merged.premium_since = profile.premium_since;
-        }
-        if (profile && profile.premium_type) {
-            merged.premium_type = profile.premium_type;
-        }
+        merged.premium_guild_since = profile?.premium_guild_since || merged.premium_guild_since;
+        merged.premium_since = profile?.premium_since || merged.premium_since;
+        merged.premium_type = profile?.premium_type || merged.premium_type;
 
-        if (profile && profile.user) {
-            for (const key of Object.keys(profile.user)) {
+        if (profile?.user) {
+            for (const [key, value] of Object.entries(profile.user)) {
                 if (!(key in merged.discord_user)) {
-                    merged.discord_user[key] = profile.user[key];
+                    merged.discord_user[key] = value;
                 }
             }
         }
@@ -761,55 +758,55 @@ document.addEventListener("DOMContentLoaded", async () => {
                             poster="https://cdn.discordapp.com/assets/collectibles/${userInfo.nameplateAsset}static.png"
                             autoplay loop muted playsinline>
                         </video>` : ""
-                    }
+                }
                     <span class="discord-avatar-wrapper">
                         <img class="discord-avatar" src="${userInfo.avatarURL}" alt="Avatar">
                         ${userInfo.avatarDecorationURL
-                            ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
-                            : ""
-                        }
+                    ? `<img class="discord-avatar-decoration" src="${userInfo.avatarDecorationURL}" alt="Avatar decoration">`
+                    : ""
+                }
                         ${STATUS_ICONS[discordStatus] ? `
                             <span class="discord-status-badge ${discordStatus === "onlineMobile" ? "online-mobile" : ""}">
                                 <img class="discord-icon hover-action" src="${STATUS_ICONS[discordStatus].asset}" title="${STATUS_ICONS[discordStatus].name}">
                             </span>` : ""
-                        }
+                }
                     </span>
                     <div class="discord-names">
                         <span class="discord-global">
                             ${escape(userInfo.globalName)}
                             <span class="discord-icons">${renderFlairs(userInfo.flairs, USER_FLAIRS)}</span>
                             <span class="discord-icons">${await (lanyardData.profile_badges?.length
-                                ? renderProfileBadges(lanyardData.profile_badges)
-                                : renderBadges(userInfo.publicFlags, USER_BADGES))
-                            }</span>
+                    ? renderProfileBadges(lanyardData.profile_badges)
+                    : renderBadges(userInfo.publicFlags, USER_BADGES))
+                }</span>
                         </span>
                         <span class="discord-username">
-                            ${escape(userInfo.username + 
-                                (userInfo.discriminator ? `#${userInfo.discriminator}` : "") + 
-                                (userInfo.pronouns ? ` • ${userInfo.pronouns}` : ""))
-                            }
+                            ${escape(userInfo.username +
+                    (userInfo.discriminator ? `#${userInfo.discriminator}` : "") +
+                    (userInfo.pronouns ? ` • ${userInfo.pronouns}` : ""))
+                }
                         </span>
                     </div>
                     ${userInfo.guild?.tagURL
-                        ? (() => {
-                            const titleText = guildLookup?.name
-                                ? `(${escape(guildLookup.name)}) ${userInfo.guild.tag} tag`
-                                : `${userInfo.guild.tag} tag`;
+                    ? (() => {
+                        const titleText = guildLookup?.name
+                            ? `(${escape(guildLookup.name)}) ${userInfo.guild.tag} tag`
+                            : `${userInfo.guild.tag} tag`;
 
-                            const spanHtml = `
+                        const spanHtml = `
                                 <span class="discord-guild-tag hover-action" title="${titleText}">
                                     <img src="${userInfo.guild.tagURL}" alt="Guild tag">
                                     ${userInfo.guild.tag}
                                 </span>
                             `;
 
-                            if (guildLookup?.instant_invite) {
-                                return `<a href="${escape(guildLookup.instant_invite)}" target="_blank" rel="noopener noreferrer" >${spanHtml}</a>`;
-                            }
+                        if (guildLookup?.instant_invite) {
+                            return `<a href="${escape(guildLookup.instant_invite)}" target="_blank" rel="noopener noreferrer" >${spanHtml}</a>`;
+                        }
 
-                            return spanHtml;
-                        })() : ""
-                    }
+                        return spanHtml;
+                    })() : ""
+                }
                 </div>
             `;
 
